@@ -1,0 +1,32 @@
+.dark-primary-color    { background: #00796B; }
+.default-primary-color { background: #009688; }
+.light-primary-color   { background: #B2DFDB; }
+.text-primary-color    { color: #FFFFFF; }
+.accent-color          { background: #607D8B; }
+.primary-text-color    { color: #212121; }
+.secondary-text-color  { color: #757575; }
+.divider-color         { border-color: #BDBDBD; }
+
+.navbar {
+    background: #00796B
+}
+
+.dropdown-menu {
+    background: #00796B;
+}
+
+.dropdown-menu li a:hover {
+    background: #009688
+}
+
+ul.nav li a, ul.nav li a:visited {
+    color: #FFFFFF;
+}
+
+ul.nav li a:hover, ul.nav li a:active {
+    color: #FFFFFF;
+}
+
+ul.nav li.active a {
+    color: #FFFFFF;
+}
