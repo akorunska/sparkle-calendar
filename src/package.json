@@ -8,7 +8,5 @@
   },
   "author": "Anna Korunska",
   "license": "ISC",
-  "dependencies": {
-    "bootstrap": "^3.3.7"
-  }
+  "dependencies": {}
 }
