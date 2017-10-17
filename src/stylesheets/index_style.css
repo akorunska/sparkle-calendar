@@ -7,12 +7,19 @@
 .secondary-text-color  { color: #757575; }
 .divider-color         { border-color: #BDBDBD; }
 
+html {
+    background: #B2DFDB;
+}
+
 .navbar {
-    background: #00796B
+    background: #607D8B;
+    border: 0px;
+    border-radius: 0px;
 }
 
 .dropdown-menu {
-    background: #00796B;
+    background: #607D8B;
+    border-radius: 0px;
 }
 
 .dropdown-menu li a:hover {
