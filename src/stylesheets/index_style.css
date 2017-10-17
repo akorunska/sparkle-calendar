@@ -8,7 +8,7 @@
 .divider-color         { border-color: #BDBDBD; }
 
 html {
-    background: #B2DFDB;
+    background: #BDBDBD;
 }
 
 .navbar {
@@ -36,4 +36,16 @@ ul.nav li a:hover, ul.nav li a:active {
 
 ul.nav li.active a {
     color: #FFFFFF;
+}
+
+#sparkle_info {
+    background: #009688;
+    font-size: xx-large;
+}
+
+#sparkle_info h1{
+    font-size: 4em;
+}
+#sparkle_info h2{
+    font-size: 2.5em;
 }
