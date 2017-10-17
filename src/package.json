@@ -1,0 +1,14 @@
+{
+  "name": "sparkle_calendar",
+  "version": "1.0.0",
+  "description": "online calendar with different nice features",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anna Korunska",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
