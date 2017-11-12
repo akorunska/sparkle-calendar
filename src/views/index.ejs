@@ -1,0 +1,41 @@
+<% include partials/header %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--todo change including bootstrap css -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="stylesheets/index.css">
+</head>
+<body>
+
+<div class="container-fluid row" id="sparkle_info">
+    <div class="col-md-7 big_text"> <H2>Sparkle</H2> <br> <H3> — your perfect calendar & planner</H3> </div>
+    <div class="col-md-3">
+        Please, sign up before continuing
+        <form action="/sign_up" method="get">
+            <button class="btn btn-block btn-lg" type="submit">Sign up</button>
+        </form>
+        <form action="/login" method="get">
+            <button class="btn btn-block btn-lg" type="submit">Log in</button>
+        </form>
+    </div>
+    <div></div>
+</div>
+
+<span>
+<!-- jQuery library -->
+<script src="http://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+<!-- Popper -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+
+<!-- Latest compiled and minified Bootstrap JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+</span>
+</body>
+</html>

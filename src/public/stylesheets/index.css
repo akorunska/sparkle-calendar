@@ -11,32 +11,32 @@ html {
     background: #BDBDBD;
 }
 
-.navbar {
-    background: #607D8B;
-    border: 0px;
-    border-radius: 0px;
-}
+/*.navbar {*/
+    /*background: #607D8B;*/
+    /*border: 0px;*/
+    /*border-radius: 0px;*/
+/*}*/
 
-.dropdown-menu {
-    background: #607D8B;
-    border-radius: 0px;
-}
+/*.dropdown-menu {*/
+    /*background: #607D8B;*/
+    /*border-radius: 0px;*/
+/*}*/
 
-.dropdown-menu li a:hover {
-    background: #009688
-}
+/*.dropdown-menu li a:hover {*/
+    /*background: #009688*/
+/*}*/
 
-ul.nav li a, ul.nav li a:visited {
-    color: #FFFFFF;
-}
+/*ul.nav li a, ul.nav li a:visited {*/
+    /*color: #FFFFFF;*/
+/*}*/
 
-ul.nav li a:hover, ul.nav li a:active {
-    color: #FFFFFF;
-}
+/*ul.nav li a:hover, ul.nav li a:active {*/
+    /*color: #FFFFFF;*/
+/*}*/
 
-ul.nav li.active a {
-    color: #FFFFFF;
-}
+/*ul.nav li.active a {*/
+    /*color: #FFFFFF;*/
+/*}*/
 
 #sparkle_info {
     background: #009688;
