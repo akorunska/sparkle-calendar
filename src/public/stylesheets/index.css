@@ -8,7 +8,7 @@
 .divider-color         { border-color: #BDBDBD; }
 
 html {
-    background: #BDBDBD;
+    /*background: #BDBDBD;*/
     width: 100%;
 }
 
@@ -66,8 +66,6 @@ a:link H1:hover {
     margin:5px 0  5px 0
 }
 
-.rwd-line a {
-    display: block;
-    page-break-inside: auto;
-    page-break-after: always;
+.nav_btn {
+    margin-top: 0.3em;
 }

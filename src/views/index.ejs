@@ -10,6 +10,7 @@
     <script src="/jq/jquery.js"></script>
     <script src="/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/index.css">
 </head>
 <body>
@@ -52,10 +53,29 @@
 
     <div class="col-md-5">
         <div>
-            <h2>Upcoming events</h2>
+            <h2>Get a quick look on upcoming events</h2>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">  <h4 ><%=date%></h4></div>
+
+            <div class="panel-heading">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <a href='/?offset=<%=offset - 1%>'>
+                                <img class="nav_btn" alt="Day before" src="/sprites/glyphicons-217-circle-arrow-left.png">
+                            </a>
+                        </div>
+                        <div class="col-md-10 text-center">
+                            <h4><%=date%></h4>
+                        </div>
+                        <div class="col-md-1">
+                            <a href='/?offset=<%=offset - -1%>'>
+                                <img class="nav_btn" alt="Next day" src="/sprites/glyphicons-218-circle-arrow-right.png">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="panel-body">
                 <%if (!event_list || event_list.length === 0) {%>
                 You`ve got nothing for this date.

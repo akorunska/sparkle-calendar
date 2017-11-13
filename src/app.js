@@ -96,21 +96,27 @@ function checkAuthor(req, res, next) {
 
 app.get('/',
     (req,res) =>  {
-        let display_date = moment().format("dddd, MMMM Do YYYY");
         let event_list;
+        let offset;
+        if (req.query.offset)
+            offset = req.query.offset;
+        else
+            offset = 0;
+        let date = moment().add(offset, 'days');
+        let display_date = date.format("dddd, MMMM Do YYYY");
         if (req.user) {
-            let search_date = (moment().format()).substring(0, (moment().format()).indexOf('T'));
+            let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
             events.getByDate(req.user.id, search_date)
                 .then(data => {
                     event_list = data;
-                    res.render('index', {user: req.user, date: display_date, event_list});
+                    res.render('index', {user: req.user, date: display_date, event_list, offset});
                 })
                 .catch(err => {
                     console.log(err);
-                    res.render('index', {user: req.user, date: display_date, event_list});
+                    res.render('index', {user: req.user, date: display_date, event_list, offset});
                 });
         } else {
-            res.render('index', {user: req.user, date: display_date, event_list});
+            res.render('index', {user: req.user, date: display_date, event_list, offset});
         }
     });
 
@@ -162,12 +168,12 @@ app.get('/profile',
         res.render('profile', {user: req.user});
     });
 
-app.get('/edit_profile',
+app.get('/profile/edit',
     checkAuth, (req, res) => {
         res.render('edit_profile', {user: req.user});
     });
 
-app.post('/edit_profile',
+app.post('/profile/edit',
     checkAuth, (req, res) => {
         console.log("received data from form:", req.body);
         let user = {
@@ -186,11 +192,11 @@ app.post('/edit_profile',
         res.redirect('/profile');
     });
 
-app.get('/edit_profile_img', (req, res) => {
+app.get('/profile/edit_img', (req, res) => {
     res.render('edit_profile_img', {user: req.user});
 });
 
-app.post('/edit_profile_img', upload.single('pic'),
+app.post('/profile/edit_img', upload.single('pic'),
     checkAuth, (req, res) => {
         let user = {
             id: req.user.id,

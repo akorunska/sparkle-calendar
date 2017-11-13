@@ -58,7 +58,11 @@ function getAll(author_id) {
 
 function getByDate(author_id, date) {
     return new Promise(function (resolve, reject) {
+
         Event.find({author_id: author_id, date: date}, function (err, docs) {
+            if (err)
+                reject(err);
+        }).sort({start_time: 'asc'}).exec(function(err, docs) {
             if (err)
                 reject(err);
             resolve(JSON.parse(JSON.stringify(docs)));
