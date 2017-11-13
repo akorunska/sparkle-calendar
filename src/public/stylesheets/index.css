@@ -9,6 +9,7 @@
 
 html {
     background: #BDBDBD;
+    width: 100%;
 }
 
 #sparkle_info {
@@ -27,4 +28,46 @@ html {
 .index_auth {
     margin: 0.5em;
     border-radius: 0px;
+}
+
+.text-left::before{
+    width: 100%;
+    content:"";
+    margin-left:calc(100% - 90%);
+}
+
+.action {
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
+
+    background-color: rgba(0, 121, 107, 0.1);
+
+    border-left-style: solid;
+    border-color: #00796B;
+    border-width: 0.5em;
+}
+
+.action_pic {
+    width: 100%;
+}
+
+a:link {
+    text-decoration: none;
+    color: #00796B;
+}
+
+a:link H1:hover {
+    background-color: rgba(96, 125, 139, 0.2);
+}
+
+.bot-border {
+    border-bottom:1px #B2DFDB solid;
+    margin:5px 0  5px 0
+}
+
+.rwd-line a {
+    display: block;
+    page-break-inside: auto;
+    page-break-after: always;
 }

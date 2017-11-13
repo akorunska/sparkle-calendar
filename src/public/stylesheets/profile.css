@@ -1,0 +1,24 @@
+#profile-image {
+    cursor: pointer;
+
+    width: 40%;
+    height: 40%;
+    border: 2px solid #00796B;
+}
+
+h2 {
+    color: #009688;
+}
+
+.tital{
+    font-size:16px;
+    font-weight:500;}
+
+.bot-border {
+    border-bottom:1px #B2DFDB solid;
+    margin:5px 0  5px 0
+}
+
+hr {
+    margin:5px 0 5px 0;
+}

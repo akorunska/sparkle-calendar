@@ -4,10 +4,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <!--todo change including bootstrap css -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/jq/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="stylesheets/index.css">
 </head>
@@ -28,18 +29,50 @@
     </div>
 </div>
 <%} else {%>
-    Some content for a registered user.
+    <div class="col-md-7">
+        <div class="container-fluid action">
+            <div class="col-md-3 action_container"> <img class="action_pic" src="https://upload.wikimedia.org/wikipedia/commons/6/69/Calendar_font_awesome.svg"></div>
+            <div class="col-md-8 text-left">
+                <a href="#"><H1>See your calendars </H1></a>
+            </div>
+        </div>
+        <div class="container-fluid action">
+            <div class="col-md-3 action_container"> <img class="action_pic" src="https://icon-icons.com/icons2/933/PNG/512/round-add-button_icon-icons.com_72595.png"></div>
+            <div class="col-md-8 text-left">
+                <a href="/add_event"><H1>Add new event</H1></a>
+            </div>
+        </div>
+        <div class="container-fluid action">
+            <div class="col-md-3"> <img class="action_pic" src="https://png.icons8.com/?id=14079&size=280"></div>
+            <div class="col-md-8 text-left">
+                <a href="#"><H1> Search </H1></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div>
+            <h2>Upcoming events</h2>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">  <h4 ><%=date%></h4></div>
+            <div class="panel-body">
+                <%if (!event_list || event_list.length === 0) {%>
+                You`ve got nothing for this date.
+                <%} else {%>
+                <div class="clearfix"></div>
+                <div class="bot-border"></div>
+                <%for(let i in event_list) {%>
+                    <div class="col-md-5"><%=event_list[i].start_time%> - <%=event_list[i].end_time%></div>
+                    <div class="col-md-7 container">
+                        <span class="rwd-line"> <a href="#"> <%=event_list[i].name%> </a> </span>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="bot-border"></div>
+                <%}}%>
+            </div>
+        </div>
+    </div>
 <%}%>
-
-<span>
-<!-- jQuery library -->
-<script src="http://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-
-<!-- Popper -->
-<script src="http://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-
-<!-- Latest compiled and minified Bootstrap JavaScript -->
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-</span>
 </body>
 </html>

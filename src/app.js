@@ -1,4 +1,5 @@
 const users = require('./modules/users.js');
+const events = require('./modules/events.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -6,7 +7,9 @@ const session = require('express-session');
 const crypto = require('crypto');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-// const multer = require('multer');
+const moment = require('moment');
+const multer = require('multer');
+// const sharp = require('sharp');
 const app = express();
 let config = require('./modules/config');
 
@@ -14,8 +17,12 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+app.use('/jq', express.static(__dirname + '/node_modules/jquery/dist'));
+app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
-// let upload = multer({dest: 'public/images/' });
+
+let upload = multer({dest: 'public/images/' });
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -47,7 +54,6 @@ passport.use(new LocalStrategy({
         let hash = sha512(password, serverSalt).passwordHash;
         users.getUserByLoginAndPasshash(username, hash)
             .then(user => {
-                console.log(user);
                 done(user ? null : 'No user', user);
             })
             .catch(err => {
@@ -71,7 +77,7 @@ passport.deserializeUser(function (id, done) {
 });
 
 function checkAuth(req, res, next) {
-    if (!req.user) return res.sendStatus(401);
+    if (!req.user) return res.redirect('/login');
     next();
 }
 
@@ -89,7 +95,24 @@ function checkAuthor(req, res, next) {
 }
 
 app.get('/',
-    (req,res) => res.render('index', {user: req.user}));
+    (req,res) =>  {
+        let display_date = moment().format("dddd, MMMM Do YYYY");
+        let event_list;
+        if (req.user) {
+            let search_date = (moment().format()).substring(0, (moment().format()).indexOf('T'));
+            events.getByDate(req.user.id, search_date)
+                .then(data => {
+                    event_list = data;
+                    res.render('index', {user: req.user, date: display_date, event_list});
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.render('index', {user: req.user, date: display_date, event_list});
+                });
+        } else {
+            res.render('index', {user: req.user, date: display_date, event_list});
+        }
+    });
 
 app.get('/sign_up',
     (req, res) => {
@@ -97,15 +120,18 @@ app.get('/sign_up',
 });
 
 app.post('/sign_up', (req, res) => {
-    console.log(req.body);
     let user = {
         username: req.body.username,
         password: sha512(req.body.password, serverSalt).passwordHash,
-        role: 'user'
+        email: req.body.email,
+        telegram: req.body.telegram,
+        role: 'user',
+        profile_pic: '/images/default.jpg'
     };
+    console.log("going to create: ", user);
     users.create(user)
         .then (() => {
-        res.redirect('/');
+        res.redirect('/login');
     })
     .catch(err => {
         console.log('could not create user:', err);
@@ -114,8 +140,7 @@ app.post('/sign_up', (req, res) => {
 });
 
 app.get('/login', (req, res) =>  {
-    console.log('someone wants to log in.');
-res.render('login', {user: req.user});
+    res.render('login', {user: req.user});
 });
 
 
@@ -126,11 +151,82 @@ app.post('/login',
     }));
 
 app.get('/logout',
-    checkAuth,
-    (req, res) => {
+    checkAuth, (req, res) => {
         req.logout();
         res.redirect('/');
     });
+
+
+app.get('/profile',
+    checkAuth, (req, res) => {
+        res.render('profile', {user: req.user});
+    });
+
+app.get('/edit_profile',
+    checkAuth, (req, res) => {
+        res.render('edit_profile', {user: req.user});
+    });
+
+app.post('/edit_profile',
+    checkAuth, (req, res) => {
+        console.log("received data from form:", req.body);
+        let user = {
+            id: req.user.id,
+            username: req.user.username,
+            password: req.user.password,
+            fullname: req.body.fullname,
+            email: req.body.email,
+            telegram: req.body.telegram,
+            role: 'user',
+            profile_pic: req.user.profile_pic
+        };
+        users.update(user)
+                    .catch(err => {console.log('An error while updating: ', err, "\n");});
+        // sharp('/images' + req.file.filename).resize(400, 400);
+        res.redirect('/profile');
+    });
+
+app.get('/edit_profile_img', (req, res) => {
+    res.render('edit_profile_img', {user: req.user});
+});
+
+app.post('/edit_profile_img', upload.single('pic'),
+    checkAuth, (req, res) => {
+        let user = {
+            id: req.user.id,
+            username: req.user.username,
+            password: req.user.password,
+            fullname: req.user.fullname,
+            email: req.user.email,
+            telegram: req.user.telegram,
+            role: 'user',
+            profile_pic: '/images/' + req.file.filename
+        };
+        users.update(user)
+            .catch(err => {console.log('An error while updating a pic: ', err, "\n");});
+
+        res.redirect('/profile');
+    });
+
+app.get('/add_event', checkAuth, (req, res) => {
+    let date = (moment().format()).substring(0, (moment().format()).indexOf('T'));
+    res.render('add_event', {user: req.user, date});
+});
+
+app.post('/add_event',
+    checkAuth, (req, res) => {
+    let event = {
+        author_id: req.user.id,
+        name: req.body.name,
+        place: req.body.place,
+        date: req.body.date,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time
+    };
+    events.create(event)
+        .catch(err => console.log('error while creating event:', err));
+    res.redirect('/');
+});
 
 let portNum = config.port;
 app.listen(portNum, () => console.log(`Server started on port ${portNum}.`));

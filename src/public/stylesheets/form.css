@@ -1,3 +1,15 @@
+#profile-image {
+    cursor: pointer;
+
+    width: 40%;
+    height: 40%;
+    border: 2px solid #00796B;
+}
+
+.bot-border{
+    border-bottom:1px #f8f8f8 solid;
+    margin:5px 0  5px 0}
+
 input {
     border-radius: 0px;
     margin: 0.5em;
@@ -5,4 +17,5 @@ input {
 
 button {
     border-radius: 0px;
+    margin: 0.5em;
 }

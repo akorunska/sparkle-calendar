@@ -1,0 +1,39 @@
+<% include partials/header %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="stylesheets/form.css">
+</head>
+<body>
+<div class="container">
+    <form action="/add_event" method="post">
+        <label for="username">Event name:</label>
+        <input type='text' name='name' class='form-control' required/>
+        <label for="place">Place:</label>
+        <input type='text' name='place' class='form-control' />
+        <label for="date">Date:</label>
+        <input type='date' name='date' class='form-control' value="<%=date%>"required/>
+        <label for="start_time">Start time:</label>
+        <input type='time' name='start_time' class='form-control' value='12:00' step="300" required/>
+        <label for="end_time">End time:</label>
+        <input type='time' name='end_time' class='form-control' value='12:00' step="300" required/>
+        <!--<label for="description">Description:</label>-->
+        <!--<input type='text' name='description' class='form-control' value='' required/>-->
+
+        <button class="btn btn-block btn-lg" type="submit">Create</button>
+    </form>
+    <form>
+        <button class="btn btn-block btn-danger btn-lg" formaction="/" formmethod="get">Cancel</button>
+    </form>
+</div>
+</body>
+</html>

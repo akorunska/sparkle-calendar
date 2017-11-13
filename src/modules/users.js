@@ -15,7 +15,11 @@ let userSch = new Schema({
         type: String,
         required: true
     },
-    role: String
+    role: String,
+    fullname: String,
+    profile_pic: String,
+    email: String,
+    telegram: String
 });
 
 userSch.options.toJSON = {
@@ -34,8 +38,13 @@ function create(user) {
         let newUser = new User ({
             username: user.username,
             password: user.password,
-            role: user.role
+            role: user.role,
+            profile_pic: user.profile_pic
         });
+        if (user.email)
+            newUser.email = user.email;
+        if (user.telegram)
+            newUser.telegram = user.telegram;
 
         newUser.save()
             .then(() => {
@@ -47,13 +56,28 @@ function create(user) {
     });
 }
 
+function update(user) {
+    return new Promise(function (resolve, reject)  {
+        User.findById(user.id, function (err, doc){
+            if (err)
+                reject(err);
+            console.log(user, "||", doc);
+            doc.profile_pic = user.profile_pic;
+            doc.email = user.email;
+            doc.telegram = user.telegram;
+            doc.fullname = user.fullname;
+            // doc.visits.$inc();
+            doc.save();
+            resolve("update successful");
+        });
+    });
+}
+
 function getUserByLoginAndPasshash(username, password) {
     return new Promise(function (resolve, reject) {
         User.findOne({username: username, password: password}, (err, docs) => {
             if (err)
                 reject(err);
-            if (docs)
-                console.log("found a user we're searching for");
             resolve(JSON.parse(JSON.stringify(docs)));
         })
     });
@@ -80,6 +104,7 @@ function getAll() {
 }
 
 module.exports.create = create;
+module.exports.update = update;
 module.exports.getUserByLoginAndPasshash = getUserByLoginAndPasshash;
 module.exports.getUserById = getUserById;
 module.exports.getAll = getAll;

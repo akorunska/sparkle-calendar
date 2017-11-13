@@ -1,0 +1,44 @@
+<% include partials/header %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/jq/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="stylesheets/form.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="box box-info">
+        <div class="box-body">
+            <div class="col-md-6">
+                <img alt="user avatar" src="<%=user.profile_pic%>"
+                     id="profile-image" class="img-circle">
+            </div>
+            <div class="col-md-6">
+            <form action="/edit_profile_img" method="post" enctype="multipart/form-data">
+
+                <div class="clearfix"></div>
+                <div class="bot-border"></div>
+
+                <div class="col-sm-5 col-xs-6 tital " >New profile img</div>
+                <div class="col-sm-7"> <input type='file' name='pic' class='form-control' required/> </div>
+                <div class="clearfix"></div>
+                <div class="bot-border"></div>
+
+                <button class="btn btn-primary col-md-6" type="submit">Submit</button>
+            </form>
+                <form>
+                    <button class="btn btn-danger col-md-6" formaction="/profile" formmethod="get">Cancel</button>
+                </form>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>
