@@ -82,10 +82,15 @@ function checkAuth(req, res, next) {
 }
 
 function checkAuthor(req, res, next) {
-    events.getById(req.params.guid)
+    let event_id;
+    if (req.params.guid)
+        event_id = req.params.guid;
+    else
+        event_id = req.query.id;
+    events.getById(event_id)
         .then(event => {
-            if(req.params.guid !== req.user.id)
-            res.redirect('/login');
+            if(event.author_id !== req.user.id)
+                res.redirect('/login');
         })
         .catch(err => {
             console.log(err);
@@ -260,6 +265,81 @@ app.get('/calendar/week',
                 res.render('calendar_week',
                     {user: req.user, moment, start_date, end_date, offset, weekly_events});
             });
+    });
+
+app.get('/events/:guid([0-9a-z]*)',
+// app.get('/events',
+    checkAuth,
+    checkAuthor,
+    (req, res) => {
+        let event;
+        let event_id = req.params.guid.trim();
+        events.getById(event_id)
+            .then (data => {
+                event = data;
+                // back_url = 'calendars/week?offset='  ;
+                let back_url = 'calendars/week';
+                res.render('event', {user: req.user, event});
+            })
+            .catch(err => {
+                console.log('error while receivng event:', err);
+                res.sendStatus(404);
+            });
+    });
+
+app.post('/event/:guid([0-9a-z]*)/delete',
+    checkAuth,
+    checkAuthor,
+    (req, res) => {
+        let event_id = req.params.guid.trim();
+        console.log(event_id);
+        events.remove(event_id)
+            .then (() => {
+                // let back_url = req.header('Referer') || '/';
+                // res.redirect(back_url);
+                res.redirect('/calendar/week');
+            })
+            .catch(err => {
+                console.log('error while receivng event:', err);
+                res.sendStatus(404);
+            });
+    });
+
+app.get('/event/edit',
+    checkAuth,
+    checkAuthor,
+    (req, res) => {
+        // console.log('going to edit', req.query);
+        events.getById(req.query.id)
+            .then(data => {
+                let event = data;
+                res.render('edit_event', {user: req.user, event});
+            })
+            .catch(err => {
+                console.log('failed to edit', req.query.id);
+                console.log(err);
+                res.redirect('/calendar/week');
+            });
+    });
+
+app.post('/event/:guid([0-9a-z]*)/edit',
+    checkAuth,
+    checkAuthor,
+    (req, res) => {
+        let event = {
+            id: req.params.guid,
+            name: req.body.name,
+            place: req.body.place,
+            date: req.body.date,
+            start_time: req.body.start_time,
+            end_time: req.body.end_time,
+            author_id: req.user.id
+        };
+        events.update(event)
+            .catch(err => {
+                console.log(err);
+            });
+        res.redirect('/events/' + event.id);
     });
 
 let portNum = config.port;

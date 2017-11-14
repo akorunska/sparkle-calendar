@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const url = 'mongodb://localhost:27017/lab6';
+const url = 'mongodb://admin:admin@ds159845.mlab.com:59845/sparkle';
 const moment = require('moment');
 mongoose.connect(url);
 
@@ -58,7 +58,6 @@ function getAll(author_id) {
 
 function getByDate(author_id, date) {
     return new Promise(function (resolve, reject) {
-
         Event.find({author_id: author_id, date: date}, function (err, docs) {
             if (err)
                 reject(err);
@@ -71,28 +70,25 @@ function getByDate(author_id, date) {
 }
 
 async function getWeekly(author_id, date) {
-    // return new Promise(function (resolve, reject) {
         let weekly = [7];
-        // date = moment.parse(date);
         for (let i = 0; i < 7; i++) {
             let cur = date.format().substring(0, (date.format()).indexOf('T'));
-            // await (Event.find({author_id: author_id, date: cur}, function (err, docs) {})
-            //     .sort({start_time: 'asc'}));
             weekly[i] = {date: date, event_list: await getByDate(author_id, cur)};
             date.add(1, 'days');
         }
     return (weekly);
 }
 
-function getById(x_id) {
-    return new Promise(function (resolve, reject) {
-        Event.findById(x_id, function (err, event){
-            if (err)
-                reject(err);
-            if (!event)
-                reject('no event wiht such id');
-            resolve(JSON.parse(JSON.stringify(event)));
-        } );
+function getById(event_id){
+    return new Promise((resolve, reject) => {
+       Event.findOne({_id: event_id}, function (err, docs) {
+           if (err)
+               reject (err);
+           else if (!docs)
+               reject ('no event with such id');
+           else
+               resolve(JSON.parse(JSON.stringify(docs)));
+       })
     });
 }
 
@@ -109,6 +105,22 @@ function remove(x_id) {
     });
 }
 
+function update(event) {
+    return new Promise(function (resolve, reject) {
+        Event.findById(event.id, function (err, doc){
+            if (err)
+                reject(err);
+            doc.name = event.name;
+            doc.place = event.place;
+            doc.date = event.date;
+            doc.start_time = event.start_time;
+            doc.end_time = event.end_time;
+            doc.save();
+            resolve("update successful");
+        });
+    });
+}
+
 
 module.exports.create = create;
 module.exports.getAll = getAll;
@@ -116,3 +128,4 @@ module.exports.getById = getById;
 module.exports.getByDate = getByDate;
 module.exports.getWeekly = getWeekly;
 module.exports.remove = remove;
+module.exports.update = update;

@@ -1,0 +1,72 @@
+<% include partials/header %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/jq/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <link href="stylesheets/ev_page.css" rel="stylesheet">
+</head>
+<body>
+<div class="container-fluid">
+<div class="col-md-2"></div>
+<div class="box box-info col-md-8">
+    <div class="box-body">
+        <H2><%=event.name%></H2>
+
+        <div class="col-sm-5 col-xs-6 tital" >Author:</div>
+        <div class="col-sm-7"> <%=user.username%> </div>
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+
+        <div class="col-sm-5 col-xs-6 tital " >Place:</div>
+        <div class="col-sm-7 col-xs-6 "><%if(event.place) { %> <%=event.place%> <% } else {%> none <%}%></div>
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+
+        <div class="col-sm-5 col-xs-6 tital " >Time:</div>
+        <div class="col-sm-7"> <%=event.start_time%> - <%=event.end_time%> </div>
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+
+        <!--<div class="col-sm-5 col-xs-6 tital " >Description:</div>-->
+        <!--<div class="col-sm-7"> <%if(event.description) { %>-->
+            <!--<%=event.description%> <% } else {%> none <%}%> </div>-->
+        <!--<div class="clearfix"></div>-->
+        <!--<div class="bot-border"></div>-->
+    </div>
+</div>
+<div class="col-md-2"></div>
+</div>
+<div class="container-fluid">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">
+        <form action="/event/edit" method="get">
+            <input type="hidden" name="id" value="<%=event.id%>">
+            <button class="btn btn-block btn-warning">Edit event</button>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <form>
+            <button class="btn btn-block btn-danger"
+                    formaction="/event/<%=event.id%>/delete" formmethod="post">Delete event</button>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<div class="container-fluid">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <form>
+            <button class="btn btn-block" formaction="/calendar/week" formmethod="get">Go to calendar</button>
+        </form>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+</body>
+</html>

@@ -53,7 +53,7 @@
                             <%for(let j in daily) {%>
                             <div class="col-md-6"><%=daily[j].start_time%> - <%=daily[j].end_time%></div>
                             <div class="col-md-6 container">
-                                <span class="rwd-line"> <a href="#"> <%=daily[j].name%> </a> </span>
+                                <span class="rwd-line"> <a href="/events/<%=daily[j].id%>"> <%=daily[j].name%> </a> </span>
                             </div>
                             <div class="clearfix"></div>
                             <div class="bot-border"></div>

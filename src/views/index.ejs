@@ -64,7 +64,8 @@
                 <%for(let i in event_list) {%>
                     <div class="col-md-5"><%=event_list[i].start_time%> - <%=event_list[i].end_time%></div>
                     <div class="col-md-7 container">
-                        <span class="rwd-line"> <a href="#"> <%=event_list[i].name%> </a> </span>
+                        <span class="rwd-line"> <a href="/events/<%=event_list[i].id%>">
+                                <%=event_list[i].name%> </a> </span>
                     </div>
                     <div class="clearfix"></div>
                     <div class="bot-border"></div>
