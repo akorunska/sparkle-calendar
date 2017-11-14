@@ -61,12 +61,10 @@ function update(user) {
         User.findById(user.id, function (err, doc){
             if (err)
                 reject(err);
-            console.log(user, "||", doc);
             doc.profile_pic = user.profile_pic;
             doc.email = user.email;
             doc.telegram = user.telegram;
             doc.fullname = user.fullname;
-            // doc.visits.$inc();
             doc.save();
             resolve("update successful");
         });

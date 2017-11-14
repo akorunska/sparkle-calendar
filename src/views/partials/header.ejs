@@ -3,9 +3,11 @@
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
+            <li><div href="" class="navbar-brand"> Sparkle </div></li>
+            <li><a href="/"> Home </a></li>
             <%if (user) { %>
             <li class="dropdown">
-                <a href="#" class="dropdown-backdrop" data-toggle="dropdown" role="button"
+                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" role="button"
                    aria-haspopup="true" aria-expanded="false">
                     <%if(user.fullname) {%>
                     <%=user.fullname%>
@@ -15,23 +17,20 @@
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/profile">Profile</a></li>
-                    <li><a href="#">My calendars</a></li>
-                    <li role="separator" type="divider"></li>
+                    <li><div class="divider"></div></li>
+                    <li><a href="/calendar/week">My calendars</a></li>
                     <li><a href="/add_event">Add new event</a></li>
-                    <li role="separator" type="divider"></li>
+                    <li><div class="divider"></div></li>
                     <li><a href="/logout">Log out</a></li>
                 </ul>
             </li>
             <%} else {%>
-            <form action="/login" method="get">
-                <button class="btn btn-block btn-lg" type="submit"> Log in </button>
-            </form>
+            <li><a href="/login">Log in</a></li>
             <%}%>
         </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="/" class="navbar-brand">Sparkle</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Help</a></li>
-        </ul>
+        <!--<ul class="nav navbar-nav navbar-right">-->
+            <!--<li><a href="#">About</a></li>-->
+            <!--<li><a href="#">Help</a></li>-->
+        <!--</ul>-->
     </div>
 </nav>

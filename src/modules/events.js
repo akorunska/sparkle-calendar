@@ -70,6 +70,20 @@ function getByDate(author_id, date) {
     });
 }
 
+async function getWeekly(author_id, date) {
+    // return new Promise(function (resolve, reject) {
+        let weekly = [7];
+        // date = moment.parse(date);
+        for (let i = 0; i < 7; i++) {
+            let cur = date.format().substring(0, (date.format()).indexOf('T'));
+            // await (Event.find({author_id: author_id, date: cur}, function (err, docs) {})
+            //     .sort({start_time: 'asc'}));
+            weekly[i] = {date: date, event_list: await getByDate(author_id, cur)};
+            date.add(1, 'days');
+        }
+    return (weekly);
+}
+
 function getById(x_id) {
     return new Promise(function (resolve, reject) {
         Event.findById(x_id, function (err, event){
@@ -100,4 +114,5 @@ module.exports.create = create;
 module.exports.getAll = getAll;
 module.exports.getById = getById;
 module.exports.getByDate = getByDate;
+module.exports.getWeekly = getWeekly;
 module.exports.remove = remove;

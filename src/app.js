@@ -234,5 +234,33 @@ app.post('/add_event',
     res.redirect('/');
 });
 
+app.get('/search',
+    checkAuth, (req, res) => {
+        res.render('search', {user: req.user});
+    });
+
+app.get('/calendar/week',
+    checkAuth, (req, res) => {
+        let weekly_events;
+        let offset;
+        if (req.query.offset)
+            offset = req.query.offset;
+        else
+            offset = 0;
+        let start_date = moment().startOf('isoWeek').add(offset, 'weeks');
+        let end_date = moment().startOf('isoWeek').add(offset, 'weeks').add(6, 'days');
+        events.getWeekly(req.user.id, moment().startOf('isoWeek').add(offset, 'weeks'))
+            .then(data => {
+                weekly_events = data;
+                res.render('calendar_week',
+                    {user: req.user, moment, start_date, end_date, offset, weekly_events});
+            })
+            .catch(err => {
+                console.log(err);
+                res.render('calendar_week',
+                    {user: req.user, moment, start_date, end_date, offset, weekly_events});
+            });
+    });
+
 let portNum = config.port;
 app.listen(portNum, () => console.log(`Server started on port ${portNum}.`));

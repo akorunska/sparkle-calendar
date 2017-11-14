@@ -1,0 +1,71 @@
+<% include partials/header %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/jq/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="stylesheets/week.css">
+</head>
+<body>
+<div class="container-fluid">
+<div class="bot-border"></div>
+    <div class="col-md-3"> </div>
+    <div class="col-md-6 row">
+        <div class="col-md-1">
+            <a href='/calendar/week?offset=<%=offset - 1%>'>
+                <img class="nav_btn" alt="Week before" src="/sprites/glyphicons-217-circle-arrow-left.png">
+            </a>
+        </div>
+        <div class="col-md-10 text-center">
+            <h4><%=start_date.format("MMMM Do")%> - <%=end_date.format("MMMM Do")%></h4>
+        </div>
+        <div class="col-md-1">
+            <a href='/calendar/week?offset=<%=offset - -1%>'>
+                <img class="nav_btn" alt="Next week" src="/sprites/glyphicons-218-circle-arrow-right.png">
+            </a>
+        </div>
+    </div>
+    <div class="col-md-3"> </div>
+    <div class="clearfix"></div>
+    <div class="bot-border"></div>
+</div>
+<div class="container-fluid">
+    <%let num = 0;%>
+    <%for(let row = 0; row < 2; row++) {%>
+        <div class="col-md-12">
+            <div class="row">
+                <%for(let i = 0; i < 4 && start_date <= end_date; i++) {%>
+                <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <%=start_date.format("dddd, MMMM Do YYYY")%>
+                            <%start_date.add(1, 'days')%>
+                        </div>
+                        <div class="panel-body">
+                            <%let daily = weekly_events[num].event_list;%>
+                            <%for(let j in daily) {%>
+                            <div class="col-md-6"><%=daily[j].start_time%> - <%=daily[j].end_time%></div>
+                            <div class="col-md-6 container">
+                                <span class="rwd-line"> <a href="#"> <%=daily[j].name%> </a> </span>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="bot-border"></div>
+                            <%}%>
+                        </div>
+                    </div>
+                </div>
+                <%num++;%>
+                <%}%>
+            </div>
+        </div>
+    <%}%>
+</div>
+</body>
+</html>
