@@ -31,3 +31,6 @@ To connect using the mongo shell: mongo ds159845.mlab.com:59845/sparkle -u <dbus
 To connect using a driver via the standard MongoDB URI (what's this?): mongodb://<dbuser>:<dbpassword>@ds159845.mlab.com:59845/sparkle  
   
 Owner\`s login/password for it are *admin/admin*.  
+
+**Impotarnt**  
+Don`t use telegram username to log in, as your device may suggest, use username instead. Otherwise you`ll be getting enternal server error. 
