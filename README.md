@@ -32,5 +32,5 @@ To connect using a driver via the standard MongoDB URI (what's this?): mongodb:/
   
 Owner\`s login/password for it are *admin/admin*.  
 
-**Impotarnt**  
+**Important**  
 Don`t use telegram username to log in, as your device may suggest, use username instead. Otherwise you`ll be getting enternal server error. 
