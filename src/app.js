@@ -82,21 +82,25 @@ function checkAuth(req, res, next) {
 }
 
 function checkAuthor(req, res, next) {
-    let event_id;
-    if (req.params.guid)
-        event_id = req.params.guid;
-    else
-        event_id = req.query.id;
-    events.getById(event_id)
-        .then(event => {
-            if(event.author_id !== req.user.id)
-                res.redirect('/login');
-        })
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-        });
-    next();
+    if (req.user.role === 'admin')
+        next();
+    else {
+        let event_id;
+        if (req.params.guid)
+            event_id = req.params.guid;
+        else
+            event_id = req.query.id;
+        events.getById(event_id)
+            .then(event => {
+                if(event.author_id !== req.user.id)
+                    res.redirect('/login');
+            })
+            .catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+        next();
+    }
 }
 
 app.get('/',
@@ -241,7 +245,79 @@ app.post('/add_event',
 
 app.get('/search',
     checkAuth, (req, res) => {
-        res.render('search', {user: req.user});
+        let per_page = 6;
+        let page = req.query.page || 1;
+        let results = [];
+        let url;
+        if (req.query.page)
+            url = req.originalUrl.substring(0, req.originalUrl.indexOf('&page='));
+        else
+            url = req.originalUrl;
+        let auth_id = (req.user.role === 'admin') ? 'admin' : req.user.id;
+
+        if (!req.query.parameter) {
+            res.render('search',
+                {   user: req.user,
+                    results,
+                    current: 0,
+                    pages: 0,
+                    q: "",
+                    url,
+                    moment
+                });
+        } else if (req.query.parameter === 'name') {
+            events.searchByName(req.query.q, page, per_page, auth_id)
+                .then (data => {
+                    results = data;
+                    events.countByName(req.query.q, auth_id)
+                        .then(count => {
+                            res.render('search',
+                                {   user: req.user,
+                                    results,
+                                    current: page,
+                                    pages: Math.ceil(count / per_page),
+                                    q: req.query.q,
+                                    url,
+                                    moment
+                                });
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            res.sendStatus(500);
+                        })
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+        } else if (req.query.parameter === 'place') {
+            events.searchByPlace(req.query.q, page, per_page, auth_id)
+                .then (data => {
+                    results = data;
+                    events.countByPlace(req.query.q, auth_id)
+                        .then(count => {
+                            res.render('search',
+                                {   user: req.user,
+                                    results,
+                                    current: page,
+                                    pages: Math.ceil(count / per_page),
+                                    q: req.query.q,
+                                    url,
+                                    moment
+                                });
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            res.sendStatus(500);
+                        })
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+        } else {
+            res.sendStatus(400);
+        }
     });
 
 app.get('/calendar/week',
@@ -279,7 +355,7 @@ app.get('/events/:guid([0-9a-z]*)',
                 event = data;
                 // back_url = 'calendars/week?offset='  ;
                 let back_url = 'calendars/week';
-                res.render('event', {user: req.user, event});
+                res.render('event', {user: req.user, event, moment});
             })
             .catch(err => {
                 console.log('error while receivng event:', err);

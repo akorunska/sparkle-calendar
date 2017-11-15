@@ -92,6 +92,77 @@ function getById(event_id){
     });
 }
 
+function searchByName(q, page, perPage, author_id) {
+    let search_param = ".*" + q + '.*';
+    let auth = (author_id === 'admin') ? new RegExp('.*') : author_id;
+
+    return new Promise(((resolve, reject) => {
+        Event
+            .find({name: new RegExp(search_param), author_id: auth})
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .exec(function(err, docs) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(JSON.parse(JSON.stringify(docs)));
+            });
+    }));
+}
+
+function countByName(q, author_id) {
+    let search_param = ".*" + q + '.*';
+    let auth = (author_id === 'admin') ? new RegExp('.*') : author_id;
+
+    return new Promise(((resolve, reject) => {
+        Event
+            .find({name: new RegExp(search_param), author_id: auth})
+            .count()
+            .exec(function(err, res) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(res);
+            });
+    }));
+}
+
+function searchByPlace(q, page, perPage, author_id) {
+    let search_param = ".*" + q + '.*';
+    let auth = (author_id === 'admin') ? new RegExp('.*') : author_id;
+
+    return new Promise(((resolve, reject) => {
+        Event
+            .find({place: new RegExp(search_param), author_id: auth})
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .exec(function(err, docs) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(JSON.parse(JSON.stringify(docs)));
+            });
+    }));
+}
+
+function countByPlace(q, author_id) {
+    let search_param = ".*" + q + '.*';
+    let auth = (author_id === 'admin') ? new RegExp('.*') : author_id;
+
+    return new Promise(((resolve, reject) => {
+        Event
+            .find({place: new RegExp(search_param), author_id: auth})
+            .count()
+            .exec(function(err, res) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(res);
+            });
+    }));
+}
+
+
 function remove(x_id) {
     return new Promise(function (resolve, reject) {
         Event.findById(x_id, function (err, event) {
@@ -101,7 +172,7 @@ function remove(x_id) {
                 reject('no event wiht such id');
             event.remove();
             resolve("event deleted");
-        } );
+        });
     });
 }
 
@@ -125,6 +196,10 @@ function update(event) {
 module.exports.create = create;
 module.exports.getAll = getAll;
 module.exports.getById = getById;
+module.exports.searchByName = searchByName;
+module.exports.countByName = countByName;
+module.exports.searchByPlace = searchByPlace;
+module.exports.countByPlace = countByPlace;
 module.exports.getByDate = getByDate;
 module.exports.getWeekly = getWeekly;
 module.exports.remove = remove;

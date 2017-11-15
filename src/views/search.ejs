@@ -14,8 +14,82 @@
     <link rel="stylesheet" href="stylesheets/index.css">
 </head>
 <body>
+    <H3>Use search to find events you need</H3>
+    <form action="search" method="get">
+        <div class="input-group container-fluid">
+            <div class="col-md-2">
+                <div class="input-group-btn">
+                    <select class="form-control" name="parameter">
+                        <option>name</option>
+                        <option>place</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="q" placeholder="Search.." value="">
+            </div>
+            <span class="input-group-btn">
+                <button class="btn btn-info" type="submit">  Search  </button>
+            </span>
+        </div>
+    </form>
 
-<H2>Sorry, this feature is not ready yet.</H2>
+    <% if (results.length > 0) { %>
+    <div class="container">
+        <div class="row">
+            <% for (var i = 0; i < results.length; i++) { %>
+            <div class="col-md-6">
+                <div class="thumbnail">
+                    <a href="events/<%=results[i].id%>"><H2><%=results[i].name%></H2> </a>
 
+                    <div class="col-sm-5 col-xs-6 tital " >Place:</div>
+                    <div class="col-sm-7 col-xs-6 "><%if(results[i].place) { %> <%=results[i].place%> <% } else {%> none <%}%></div>
+                    <div class="clearfix"></div>
+                    <div class="bot-border"></div>
+
+                    <div class="col-sm-5 col-xs-6 tital " >Date:</div>
+                    <%let date = moment(results[i].date)%>
+                    <div class="col-sm-7"><%=date.format("dddd, MMMM Do YYYY")%></div>
+                    <div class="clearfix"></div>
+                    <div class="bot-border"></div>
+
+                    <div class="col-sm-5 col-xs-6 tital " >Time:</div>
+                    <div class="col-sm-7"> <%=results[i].start_time%> - <%=results[i].end_time%> </div>
+                    <div class="clearfix"></div>
+                    <div class="bot-border"></div>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <% if (pages > 0) { %>
+        <ul class="pagination text-center">
+            <% if (current == 1) { %>
+            <li class="disabled"><a>First</a></li>
+            <% } else { %>
+            <li><a href=<%=url + '&page=1' %>>First</a></li>
+            <% } %>
+            <% let i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+            <% if (i !== 1) { %>
+            <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+            <% if (i == current) { %>
+            <li class="active"><a><%= i %></a></li>
+            <% } else { %>
+            <li><a href="<%=url +"&page=" + i %>"><%= i %></a></li>
+            <% } %>
+            <% if (i == Number(current) + 4 && i < pages) { %>
+            <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% } %>
+            <% if (current == pages) { %>
+            <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+            <li><a href="<%=url +"&page=" + pages %>">Last</a></li>
+            <% } %>
+        </ul>
+        <% }%>
+    </div>
+    <% }%>
 </body>
 </html>

@@ -29,16 +29,16 @@
         <div class="clearfix"></div>
         <div class="bot-border"></div>
 
+        <div class="col-sm-5 col-xs-6 tital " >Date:</div>
+        <%let date = moment(event.date)%>
+        <div class="col-sm-7"><%=date.format("dddd, MMMM Do YYYY")%></div>
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+
         <div class="col-sm-5 col-xs-6 tital " >Time:</div>
         <div class="col-sm-7"> <%=event.start_time%> - <%=event.end_time%> </div>
         <div class="clearfix"></div>
         <div class="bot-border"></div>
-
-        <!--<div class="col-sm-5 col-xs-6 tital " >Description:</div>-->
-        <!--<div class="col-sm-7"> <%if(event.description) { %>-->
-            <!--<%=event.description%> <% } else {%> none <%}%> </div>-->
-        <!--<div class="clearfix"></div>-->
-        <!--<div class="bot-border"></div>-->
     </div>
 </div>
 <div class="col-md-2"></div>
