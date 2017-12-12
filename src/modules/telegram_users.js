@@ -32,12 +32,13 @@ telegram_userSch.options.toJSON = {
     }
 };
 
-let Telegram_user = mongoose.model('User', telegram_userSch, 'telegram_users');
+let Telegram_user = mongoose.model('Telegram_user', telegram_userSch, 'telegram_users');
 
 function create(user) {
     return new Promise(function (resolve, reject) {
+        console.log(user);
         let t_user = new Telegram_user({
-            telegram: user.telegram,
+            telegram: '@' + user.telegram,
             chat_id: user.chat_id,
             user_id: user.user_id
         });
@@ -52,4 +53,16 @@ function create(user) {
     });
 }
 
+function getUserByTelegramUsername(username) {
+    return new Promise(function (resolve, reject) {
+        let q = '@' + username;
+        Telegram_user.findOne({telegram: q}, function (err, user){
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(user)));
+        } );
+    });
+}
+
 module.exports.create = create;
+module.exports.getUserByTelegramUsername = getUserByTelegramUsername;

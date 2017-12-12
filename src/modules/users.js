@@ -93,7 +93,8 @@ function getUserById(id) {
 
 function getUserByTelegramUsername(username) {
     return new Promise(function (resolve, reject) {
-        User.find({telegram: "@" + username}, function (err, user){
+        let q = '@' + username;
+        User.findOne({telegram: q}, function (err, user){
             if (err)
                 reject(err);
             resolve(JSON.parse(JSON.stringify(user)));
