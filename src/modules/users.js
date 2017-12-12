@@ -91,6 +91,16 @@ function getUserById(id) {
     });
 }
 
+function getUserByTelegramUsername(username) {
+    return new Promise(function (resolve, reject) {
+        User.find({telegram: "@" + username}, function (err, user){
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(user)));
+        } );
+    });
+}
+
 function getAll() {
     return new Promise(function (resolve, reject) {
         User.find({ }, function (err, docs) {
@@ -105,4 +115,5 @@ module.exports.create = create;
 module.exports.update = update;
 module.exports.getUserByLoginAndPasshash = getUserByLoginAndPasshash;
 module.exports.getUserById = getUserById;
+module.exports.getUserByTelegramUsername = getUserByTelegramUsername;
 module.exports.getAll = getAll;

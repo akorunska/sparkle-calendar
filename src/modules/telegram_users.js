@@ -6,6 +6,11 @@ let Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 let telegram_userSch = new Schema({
+    user_id: {
+        type: String,
+        unique: true,
+        required: true
+    },
     telegram: {
         type: String,
         unique: true,
@@ -33,7 +38,8 @@ function create(user) {
     return new Promise(function (resolve, reject) {
         let t_user = new Telegram_user({
             telegram: user.telegram,
-            chat_id: user.chat_id
+            chat_id: user.chat_id,
+            user_id: user.user_id
         });
 
         t_user.save()
