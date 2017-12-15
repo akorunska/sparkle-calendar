@@ -9,7 +9,6 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const moment = require('moment');
 const multer = require('multer');
-// const sharp = require('sharp');
 const app = express();
 let config = require('./modules/config');
 

@@ -96,13 +96,31 @@ bot.onText(/\/love/, function onLoveText(msg) {
     const opts = {
         reply_to_message_id: msg.message_id,
         reply_markup: JSON.stringify({
+            'one_time_keyboard': true,
             keyboard: [
                 ['Yes, you are the bot of my life ❤'],
                 ['No, sorry there is another one...']
             ]
         })
     };
-    bot.sendMessage(msg.chat.id, 'Do you love me?', opts);
+
+    bot.sendMessage(msg.from.id, 'Do you love me?', opts)
+        .then(sent => {
+            bot.onReplyToMessage(msg.from.id, sent.message_id, (response) => {
+                if (response.text === "Yes, you are the bot of my life ❤") {
+                    bot.sendMessage(msg.from.id, 'It is forever :3')
+                }
+            });
+            bot.onText("Yes, you are the bot of my life ❤", () => {
+                bot.sendMessage(msg.from.id, 'It is forever :3')
+            });
+        });
+
+    // {
+    //     "reply_markup": {
+    //     "remove_keyboard": true
+    // }
+    // }
 });
 
 // bot.on('message', function (msg) {
