@@ -21,6 +21,7 @@
         <label for="username">Pick a username (be careful, you can not change this one later!):</label>
         <input type='text' name='username' class='form-control'
                placeholder='Enter your username'
+               id='username_input' oninput='validate_username()'
                required/>
         <div class="error alert-danger" id="username_error"><br></div>
 

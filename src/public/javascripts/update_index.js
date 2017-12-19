@@ -27,7 +27,6 @@ function requestEvents() {
     let ajax = new XMLHttpRequest();
 
     ajax.onreadystatechange = function() {
-        console.log(ajax.readyState, ajax.response, ajax.status);
         if(ajax.readyState === 4 && ajax.status === 200) {
             let eventObj = JSON.parse(ajax.response);
             model.events = eventObj.events;

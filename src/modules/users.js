@@ -91,6 +91,16 @@ function getUserById(id) {
     });
 }
 
+function getAll() {
+    return new Promise(function (resolve, reject) {
+        User.find({ }, function (err, docs) {
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(docs)));
+        });
+    });
+}
+
 function getUserByTelegramUsername(username) {
     return new Promise(function (resolve, reject) {
         let q = '@' + username;
@@ -102,19 +112,51 @@ function getUserByTelegramUsername(username) {
     });
 }
 
-function getAll() {
+function getUserByUsername(username) {
     return new Promise(function (resolve, reject) {
-        User.find({ }, function (err, docs) {
+        User.findOne({username: username}, function (err, user){
             if (err)
                 reject(err);
-            resolve(JSON.parse(JSON.stringify(docs)));
-        });
+            resolve(JSON.parse(JSON.stringify(user)));
+        } );
     });
 }
+
+function getUserByEmail(email) {
+    return new Promise(function (resolve, reject) {
+        User.findOne({email: email}, function (err, user){
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(user)));
+        } );
+    });
+}
+
+// function getByUsername(q) {
+//     return new Promise(function (resolve, reject) {
+//         User.find({username: q }, function (err, docs) {
+//             if (err)
+//                 reject(err);
+//             resolve(JSON.parse(JSON.stringify(docs)));
+//         });
+//     });
+// }
+//
+// function getByTelegram(q) {
+//     return new Promise(function (resolve, reject) {
+//         User.find({telegram: q }, function (err, docs) {
+//             if (err)
+//                 reject(err);
+//             resolve(JSON.parse(JSON.stringify(docs)));
+//         });
+//     });
+// }
 
 module.exports.create = create;
 module.exports.update = update;
 module.exports.getUserByLoginAndPasshash = getUserByLoginAndPasshash;
 module.exports.getUserById = getUserById;
 module.exports.getUserByTelegramUsername = getUserByTelegramUsername;
+module.exports.getUserByUsername = getUserByUsername;
+module.exports.getUserByEmail= getUserByEmail;
 module.exports.getAll = getAll;
