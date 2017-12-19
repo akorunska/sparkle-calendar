@@ -8,28 +8,29 @@ let checkAuth = auth.checkAuth;
 
 router.get('/',
     (req,res) =>  {
-        let event_list;
-        let offset;
-        if (req.query.offset)
-            offset = req.query.offset;
-        else
-            offset = 0;
-        let date = moment().add(offset, 'days');
-        let display_date = date.format("dddd, MMMM Do YYYY");
-        if (req.user) {
-            let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
-            events.getByDate(req.user.id, search_date)
-                .then(data => {
-                    event_list = data;
-                    res.render('index', {user: req.user, date: display_date, event_list, offset});
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.render('index', {user: req.user, date: display_date, event_list, offset});
-                });
-        } else {
-            res.render('index', {user: req.user, date: display_date, event_list, offset});
-        }
+        // let event_list;
+        // let offset;
+        // if (req.query.offset)
+        //     offset = req.query.offset;
+        // else
+        //     offset = 0;
+        // let date = moment().add(offset, 'days');
+        // let display_date = date.format("dddd, MMMM Do YYYY");
+        // if (req.user) {
+        //     let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
+        //     events.getByDate(req.user.id, search_date)
+        //         .then(data => {
+        //             event_list = data;
+        //             res.render('index', {user: req.user, date: display_date, event_list, offset});
+        //         })
+        //         .catch(err => {
+        //             console.log(err);
+        //             res.render('index', {user: req.user, date: display_date, event_list, offset});
+        //         });
+        // } else {
+        //     res.render('index', {user: req.user, date: display_date, event_list, offset});
+        // }
+        res.render('index', {user: req.user});
     });
 
 router.get('/search',

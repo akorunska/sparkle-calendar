@@ -12,6 +12,23 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/index.css">
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js'></script>
+    <script src="javascripts/update_index.js"></script>
+
+    <script id="list-template" type="x-tmpl-mustache">
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+        {{#list}}
+            <div class="col-md-5">{{start_time}} - {{end_time}}</div>
+            <div class="col-md-7 container">
+                <span class="rwd-line"> <a href="/events/{{id}}"> {{name}} </a> </span>
+            </div>
+            <div class="clearfix"></div>
+             <div class="bot-border"></div>
+        {{/list}}
+    </script>
+
 </head>
 <body>
 <%if (!user) {%>
@@ -35,42 +52,28 @@
             <h2>Take a quick look on upcoming events</h2>
         </div>
         <div class="panel panel-default">
-
             <div class="panel-heading">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-1">
-                            <a href='/?offset=<%=offset - 1%>'>
-                                <img class="nav_btn" alt="Day before" src="/sprites/glyphicons-217-circle-arrow-left.png">
-                            </a>
+                            <img id="prev_day" class="nav_btn"
+                                 alt="Day before"
+                                 src="/sprites/glyphicons-217-circle-arrow-left.png"
+                            >
                         </div>
                         <div class="col-md-10 text-center">
-                            <h4><%=date%></h4>
+                            <h4 id="display_date"></h4>
                         </div>
                         <div class="col-md-1">
-                            <a href='/?offset=<%=offset - -1%>'>
-                                <img class="nav_btn" alt="Next day" src="/sprites/glyphicons-218-circle-arrow-right.png">
-                            </a>
+                            <img id="next_day" class="nav_btn"
+                                 alt="Next day"
+                                 src="/sprites/glyphicons-218-circle-arrow-right.png"
+                            >
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="panel-body">
-                <%if (!event_list || event_list.length === 0) {%>
-                You`ve got nothing for this date.
-                <%} else {%>
-                <div class="clearfix"></div>
-                <div class="bot-border"></div>
-                <%for(let i in event_list) {%>
-                    <div class="col-md-5"><%=event_list[i].start_time%> - <%=event_list[i].end_time%></div>
-                    <div class="col-md-7 container">
-                        <span class="rwd-line"> <a href="/events/<%=event_list[i].id%>">
-                                <%=event_list[i].name%> </a> </span>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="bot-border"></div>
-                <%}}%>
-            </div>
+            <div id="event_list" class="panel-body"> </div>
         </div>
     </div>
     <div class="col-md-5">
