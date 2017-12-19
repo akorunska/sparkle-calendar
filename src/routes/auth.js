@@ -3,6 +3,8 @@ const router = express.Router();
 const config = require('./../modules/config');
 const serverSalt = config.salt;
 const passport = require('passport');
+const crypto = require('crypto');
+const basicAuth = require('basic-auth');
 
 const users = require('./../modules/users.js');
 const events = require('./../modules/events.js');
@@ -30,6 +32,33 @@ function checkAuthor(req, res, next) {
                 console.log(err);
                 res.sendStatus(500);
             });
+        next();
+    }
+}
+
+function sha512(password, salt) {
+    const hash = crypto.createHmac('sha512', salt);
+    hash.update(password);
+    const value = hash.digest('hex');
+    return {
+        salt: salt,
+        passwordHash: value
+    };
+}
+
+function basic_auth(req, res, next) {
+    let n_user = basicAuth(req);
+    if (n_user && n_user.name && n_user.pass) {
+        let hash = sha512(n_user.pass, serverSalt).passwordHash;
+        users.getUserByLoginAndPasshash(n_user.name, hash)
+            .then (res_user => {
+                req.user = res_user;
+                next();
+            })
+            .catch (() => {
+                next();
+            });
+    } else {
         next();
     }
 }
@@ -80,3 +109,4 @@ router.get('/logout',
 module.exports = router;
 module.exports.checkAuth = checkAuth;
 module.exports.checkAuthor = checkAuthor;
+module.exports.basic_auth = basic_auth;

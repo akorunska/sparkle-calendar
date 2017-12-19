@@ -6,12 +6,12 @@ const moment = require('moment');
 
 let checkAuth = auth.checkAuth;
 
-router.get('/add_event.js', checkAuth, (req, res) => {
+router.get('/add_event', checkAuth, (req, res) => {
     let date = (moment().format()).substring(0, (moment().format()).indexOf('T'));
-    res.render('add_event.js', {user: req.user, date});
+    res.render('add_event', {user: req.user, date});
 });
 
-router.post('/add_event.js',
+router.post('/add_event',
     checkAuth, (req, res) => {
         let event = {
             author_id: req.user.id,
