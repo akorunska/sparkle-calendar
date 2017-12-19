@@ -19,18 +19,33 @@
     <H2>Sign up to Sparkle and start planning right now</H2>
     <form action="/sign_up" method="post" onsubmit="return(validate());">
         <label for="username">Pick a username (be careful, you can not change this one later!):</label>
-        <input type='text' name='username' class='form-control' required/>
+        <input type='text' name='username' class='form-control'
+               placeholder='Enter your username'
+               required/>
+        <div class="error alert-danger" id="username_error"><br></div>
+
         <label for="email">Email:</label>
-        <input type='text' name='email' class='form-control' />
+        <input type='text' name='email' class='form-control'
+               placeholder='Enter your email'
+               id='email_input' onblur='validate_email()'/>
+        <div class="error alert-danger" id="email_error"><br></div>
+
         <label for="telegram">Telegram username:</label>
-        <input type='text' name='telegram' class='form-control' />
+        <input type='text' name='telegram' class='form-control'
+               placeholder='Enter your @telegram_username'
+               id='telegram_input' onblur='validate_telegram()'/>
+        <div class="error alert-danger" id="telegram_error"><br></div>
+
         <label for="password">Password:</label>
-        <input type='password' name='password' class='form-control' value=''
-               id='pass_input' oninput='validate_pass(password)' required/>
+        <input type='password' name='password' class='form-control'
+               placeholder='Enter your password'
+               id='pass_input' onblur='validate_pass()' required/>
         <div class="error alert-danger" id="pass_error"><br></div>
+
         <label for="password2">Repeat your password:</label>
-        <input type='password' name='password2' class='form-control' value=''
-               id='pass_input2' oninput='validate_pass_match(password)' required/>
+        <input type='password' name='password2' class='form-control'
+               placeholder='Enter your password once again'
+               id='pass_input2' onblur='validate_pass_match()' required/>
         <div class="error alert-danger" id="pass_error2"><br></div>
         <button class="btn btn-block btn-lg" type="submit">Sign up</button>
     </form>

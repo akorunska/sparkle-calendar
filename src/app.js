@@ -1,5 +1,4 @@
 const users = require('./modules/users.js');
-const events = require('./modules/events.js');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -7,23 +6,24 @@ const session = require('express-session');
 const crypto = require('crypto');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const moment = require('moment');
-const multer = require('multer');
 const app = express();
-let config = require('./modules/config');
+const config = require('./modules/config');
 
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const main_routes = require('./routes/mainroutes');
+const calendar_routes = require('./routes/calendar');
+const auth_routes = require ('./routes/auth');
+const profile_routes = require ('./routes/profile');
+const event_routes = require ('./routes/events');
+const add_event_routes = require ('./routes/add_event');
+const api_routes = require('./routes/api');
+
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
 app.use('/jq', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
-
-let upload = multer({dest: 'public/images/' });
-
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
@@ -34,7 +34,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const serverSalt = "45%sAlT_";
+const serverSalt = config.salt;
 
 function sha512(password, salt) {
     const hash = crypto.createHmac('sha512', salt);
@@ -75,347 +75,17 @@ passport.deserializeUser(function (id, done) {
         });
 });
 
-function checkAuth(req, res, next) {
-    if (!req.user) return res.redirect('/login');
-    next();
-}
-
-function checkAuthor(req, res, next) {
-    if (req.user.role === 'admin')
-        next();
-    else {
-        let event_id;
-        if (req.params.guid)
-            event_id = req.params.guid;
-        else
-            event_id = req.query.id;
-        events.getById(event_id)
-            .then(event => {
-                if(event.author_id !== req.user.id)
-                    res.redirect('/login');
-            })
-            .catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-            });
-        next();
-    }
-}
-
-app.get('/',
-    (req,res) =>  {
-        let event_list;
-        let offset;
-        if (req.query.offset)
-            offset = req.query.offset;
-        else
-            offset = 0;
-        let date = moment().add(offset, 'days');
-        let display_date = date.format("dddd, MMMM Do YYYY");
-        if (req.user) {
-            let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
-            events.getByDate(req.user.id, search_date)
-                .then(data => {
-                    event_list = data;
-                    res.render('index', {user: req.user, date: display_date, event_list, offset});
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.render('index', {user: req.user, date: display_date, event_list, offset});
-                });
-        } else {
-            res.render('index', {user: req.user, date: display_date, event_list, offset});
-        }
-    });
-
-app.get('/sign_up',
-    (req, res) => {
-    res.render('sign_up', {user: req.user});
-});
-
-app.post('/sign_up', (req, res) => {
-    let user = {
-        username: req.body.username,
-        password: sha512(req.body.password, serverSalt).passwordHash,
-        email: req.body.email,
-        telegram: req.body.telegram,
-        role: 'user',
-        profile_pic: '/images/default.jpg'
-    };
-    console.log("going to create: ", user);
-    users.create(user)
-        .then (() => {
-        res.redirect('/login');
-    })
-    .catch(err => {
-        console.log('could not create user:', err);
-        res.redirect('/sign_up');
-    });
-});
-
-app.get('/login', (req, res) =>  {
-    res.render('login', {user: req.user});
-});
-
-
-app.post('/login',
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/login'
-    }));
-
-app.get('/logout',
-    checkAuth, (req, res) => {
-        req.logout();
-        res.redirect('/');
-    });
-
-
-app.get('/profile',
-    checkAuth, (req, res) => {
-        res.render('profile', {user: req.user});
-    });
-
-app.get('/profile/edit',
-    checkAuth, (req, res) => {
-        res.render('edit_profile', {user: req.user});
-    });
-
-app.post('/profile/edit',
-    checkAuth, (req, res) => {
-        console.log("received data from form:", req.body);
-        let user = {
-            id: req.user.id,
-            username: req.user.username,
-            password: req.user.password,
-            fullname: req.body.fullname,
-            email: req.body.email,
-            telegram: req.body.telegram,
-            role: 'user',
-            profile_pic: req.user.profile_pic
-        };
-        users.update(user)
-                    .catch(err => {console.log('An error while updating: ', err, "\n");});
-        // sharp('/images' + req.file.filename).resize(400, 400);
-        res.redirect('/profile');
-    });
-
-app.get('/profile/edit_img', (req, res) => {
-    res.render('edit_profile_img', {user: req.user});
-});
-
-app.post('/profile/edit_img', upload.single('pic'),
-    checkAuth, (req, res) => {
-        let user = {
-            id: req.user.id,
-            username: req.user.username,
-            password: req.user.password,
-            fullname: req.user.fullname,
-            email: req.user.email,
-            telegram: req.user.telegram,
-            role: 'user',
-            profile_pic: '/images/' + req.file.filename
-        };
-        users.update(user)
-            .catch(err => {console.log('An error while updating a pic: ', err, "\n");});
-
-        res.redirect('/profile');
-    });
-
-app.get('/add_event', checkAuth, (req, res) => {
-    let date = (moment().format()).substring(0, (moment().format()).indexOf('T'));
-    res.render('add_event', {user: req.user, date});
-});
-
-app.post('/add_event',
-    checkAuth, (req, res) => {
-    let event = {
-        author_id: req.user.id,
-        name: req.body.name,
-        place: req.body.place,
-        date: req.body.date,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time
-    };
-    events.create(event)
-        .catch(err => console.log('error while creating event:', err));
-    res.redirect('/');
-});
-
-app.get('/search',
-    checkAuth, (req, res) => {
-        let per_page = 6;
-        let page = req.query.page || 1;
-        let results = [];
-        let url;
-        if (req.query.page)
-            url = req.originalUrl.substring(0, req.originalUrl.indexOf('&page='));
-        else
-            url = req.originalUrl;
-        let auth_id = (req.user.role === 'admin') ? 'admin' : req.user.id;
-
-        if (!req.query.parameter) {
-            res.render('search',
-                {   user: req.user,
-                    results,
-                    current: 0,
-                    pages: 0,
-                    q: "",
-                    url,
-                    moment
-                });
-        } else if (req.query.parameter === 'name') {
-            events.searchByName(req.query.q, page, per_page, auth_id)
-                .then (data => {
-                    results = data;
-                    events.countByName(req.query.q, auth_id)
-                        .then(count => {
-                            res.render('search',
-                                {   user: req.user,
-                                    results,
-                                    current: page,
-                                    pages: Math.ceil(count / per_page),
-                                    q: req.query.q,
-                                    url,
-                                    moment
-                                });
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            res.sendStatus(500);
-                        })
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.sendStatus(500);
-                });
-        } else if (req.query.parameter === 'place') {
-            events.searchByPlace(req.query.q, page, per_page, auth_id)
-                .then (data => {
-                    results = data;
-                    events.countByPlace(req.query.q, auth_id)
-                        .then(count => {
-                            res.render('search',
-                                {   user: req.user,
-                                    results,
-                                    current: page,
-                                    pages: Math.ceil(count / per_page),
-                                    q: req.query.q,
-                                    url,
-                                    moment
-                                });
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            res.sendStatus(500);
-                        })
-                })
-                .catch(err => {
-                    console.log(err);
-                    res.sendStatus(500);
-                });
-        } else {
-            res.sendStatus(400);
-        }
-    });
-
-app.get('/calendar/week',
-    checkAuth, (req, res) => {
-        let weekly_events;
-        let offset;
-        if (req.query.offset)
-            offset = req.query.offset;
-        else
-            offset = 0;
-        let start_date = moment().startOf('isoWeek').add(offset, 'weeks');
-        let end_date = moment().startOf('isoWeek').add(offset, 'weeks').add(6, 'days');
-        events.getWeekly(req.user.id, moment().startOf('isoWeek').add(offset, 'weeks'))
-            .then(data => {
-                weekly_events = data;
-                res.render('calendar_week',
-                    {user: req.user, moment, start_date, end_date, offset, weekly_events});
-            })
-            .catch(err => {
-                console.log(err);
-                res.render('calendar_week',
-                    {user: req.user, moment, start_date, end_date, offset, weekly_events});
-            });
-    });
-
-app.get('/events/:guid([0-9a-z]*)',
-// app.get('/events',
-    checkAuth,
-    checkAuthor,
-    (req, res) => {
-        let event;
-        let event_id = req.params.guid.trim();
-        events.getById(event_id)
-            .then (data => {
-                event = data;
-                // back_url = 'calendars/week?offset='  ;
-                let back_url = 'calendars/week';
-                res.render('event', {user: req.user, event, moment});
-            })
-            .catch(err => {
-                console.log('error while receivng event:', err);
-                res.sendStatus(404);
-            });
-    });
-
-app.post('/event/:guid([0-9a-z]*)/delete',
-    checkAuth,
-    checkAuthor,
-    (req, res) => {
-        let event_id = req.params.guid.trim();
-        console.log(event_id);
-        events.remove(event_id)
-            .then (() => {
-                // let back_url = req.header('Referer') || '/';
-                // res.redirect(back_url);
-                res.redirect('/calendar/week');
-            })
-            .catch(err => {
-                console.log('error while receivng event:', err);
-                res.sendStatus(404);
-            });
-    });
-
-app.get('/event/edit',
-    checkAuth,
-    checkAuthor,
-    (req, res) => {
-        // console.log('going to edit', req.query);
-        events.getById(req.query.id)
-            .then(data => {
-                let event = data;
-                res.render('edit_event', {user: req.user, event});
-            })
-            .catch(err => {
-                console.log('failed to edit', req.query.id);
-                console.log(err);
-                res.redirect('/calendar/week');
-            });
-    });
-
-app.post('/event/:guid([0-9a-z]*)/edit',
-    checkAuth,
-    checkAuthor,
-    (req, res) => {
-        let event = {
-            id: req.params.guid,
-            name: req.body.name,
-            place: req.body.place,
-            date: req.body.date,
-            start_time: req.body.start_time,
-            end_time: req.body.end_time,
-            author_id: req.user.id
-        };
-        events.update(event)
-            .catch(err => {
-                console.log(err);
-            });
-        res.redirect('/events/' + event.id);
-    });
+app.use('/', main_routes);
+app.use('/', calendar_routes);
+app.use('/', auth_routes);
+app.use('/', api_routes);
+app.use('/', profile_routes);
+app.use('/', event_routes);
+app.use('/', add_event_routes);
+// app.use('/', api);
+// app.use((req, res) => {
+//     res.render('404');
+// });
 
 let portNum = config.port;
 app.listen(portNum, () => console.log(`Server started on port ${portNum}.`));
