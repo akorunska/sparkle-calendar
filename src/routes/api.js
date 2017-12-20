@@ -31,9 +31,34 @@ router.get('/api/v1/user/events', basic_auth,
         }
     });
 
+router.get('/api/v1/user/weekly', basic_auth,
+    async (req, res) => {
+        let offset = (req.query.offset) ? (req.query.offset) : 0;
+        let date = moment().add(offset, 'days');
+
+        let start_date = moment().startOf('isoWeek').add(offset, 'weeks');
+        let end_date = moment().startOf('isoWeek').add(offset, 'weeks').add(6, 'days');
+        if (req.user) {
+            events.getWeekly(req.user.id, moment().startOf('isoWeek').add(offset, 'weeks'))
+                .then(data => {
+                    let resp = {
+                        days: data,
+                        start_date: start_date.format("MMMM Do"),
+                        end_date: end_date.format("MMMM Do")
+                    };
+                    res.json(resp);
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json({ message: "An error occurred, sorry."});
+                });
+        } else {
+            res.status(401).json({ message: "Requires authentication"});
+        }
+    });
+
 router.get('/api/v1/taken',
     async (req, res) => {
-        // let users = await users.getAll();
         if (req.query.username) {
             let found = await users.getUserByUsername(req.query.username);
             if (found) {

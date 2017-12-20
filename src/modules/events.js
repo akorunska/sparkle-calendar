@@ -73,7 +73,11 @@ async function getWeekly(author_id, date) {
         let weekly = [7];
         for (let i = 0; i < 7; i++) {
             let cur = date.format().substring(0, (date.format()).indexOf('T'));
-            weekly[i] = {date: date, event_list: await getByDate(author_id, cur)};
+            weekly[i] = {
+                date: date,
+                display_date: date.format("dddd, MMMM Do YYYY"),
+                event_list: await getByDate(author_id, cur)
+            };
             date.add(1, 'days');
         }
     return (weekly);

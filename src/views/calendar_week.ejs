@@ -12,6 +12,23 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="stylesheets/week.css">
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js'></script>
+    <script src="javascripts/update_calendar.js"></script>
+
+    <script id="list-template" type="x-tmpl-mustache">
+        <div class="clearfix"></div>
+        <div class="bot-border"></div>
+        {{#list}}
+            <div class="col-md-6">{{start_time}} - {{end_time}}</div>
+            <div class="col-md-6 container">
+                <span class="rwd-line"> <a href="/events/{{id}}"> {{name}} </a> </span>
+            </div>
+            <div class="clearfix"></div>
+             <div class="bot-border"></div>
+        {{/list}}
+    </script>
+
 </head>
 <body>
 <div class="container-fluid">
@@ -19,17 +36,17 @@
     <div class="col-md-3"> </div>
     <div class="col-md-6 row">
         <div class="col-md-1">
-            <a href='/calendar/week?offset=<%=offset - 1%>'>
-                <img class="nav_btn" alt="Week before" src="/sprites/glyphicons-217-circle-arrow-left.png">
-            </a>
+            <img class="nav_btn" alt="Week before"
+                 src="/sprites/glyphicons-217-circle-arrow-left.png"
+                 id="prev_week">
         </div>
         <div class="col-md-10 text-center">
-            <h4><%=start_date.format("MMMM Do")%> - <%=end_date.format("MMMM Do")%></h4>
+            <h4 id="week_dates"></h4>
         </div>
         <div class="col-md-1">
-            <a href='/calendar/week?offset=<%=offset - -1%>'>
-                <img class="nav_btn" alt="Next week" src="/sprites/glyphicons-218-circle-arrow-right.png">
-            </a>
+            <img class="nav_btn" alt="Next week"
+                 src="/sprites/glyphicons-218-circle-arrow-right.png"
+                 id="next_week">
         </div>
     </div>
     <div class="col-md-3"> </div>
@@ -38,34 +55,42 @@
 </div>
 <div class="container-fluid">
     <%let num = 0;%>
-    <%for(let row = 0; row < 2; row++) {%>
-        <div class="col-md-12">
-            <div class="row">
-                <%for(let i = 0; i < 4 && start_date <= end_date; i++) {%>
-                <div class="col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <%=start_date.format("dddd, MMMM Do YYYY")%>
-                            <%start_date.add(1, 'days')%>
-                        </div>
-                        <div class="panel-body">
-                            <%let daily = weekly_events[num].event_list;%>
-                            <%for(let j in daily) {%>
-                            <div class="col-md-6"><%=daily[j].start_time%> - <%=daily[j].end_time%></div>
-                            <div class="col-md-6 container">
-                                <span class="rwd-line"> <a href="/events/<%=daily[j].id%>"> <%=daily[j].name%> </a> </span>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="bot-border"></div>
-                            <%}%>
+    <div class="col-md-12">
+        <div class="row">
+            <%for(let i = 0; i < 4; i++) {%>
+            <%let disp_date = "display_date_" + num%>
+            <%let day_id = "event_list_" + num%>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="container-fluid">
+                            <div id="<%=disp_date%>"></div>
                         </div>
                     </div>
+                    <div id="<%=day_id%>" class="panel-body"> </div>
                 </div>
-                <%num++;%>
-                <%}%>
             </div>
+            <%num++;%>
+            <%}%>
         </div>
-    <%}%>
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <%for(let i = 4; i < 7; i++) {%>
+            <%let disp_date = "display_date_" + num%>
+            <%let day_id = "event_list_" + num%>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div id="<%=disp_date%>"></div>
+                    </div>
+                    <div id="<%=day_id%>" class="panel-body"> </div>
+                </div>
+            </div>
+            <%num++;%>
+            <%}%>
+        </div>
+    </div>
 </div>
 </body>
 </html>
