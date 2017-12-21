@@ -72,6 +72,21 @@ bot.onText(/\/today/, async function (msg) {
     }
 });
 
+function dayilyReplyMarkup(event_list) {
+    let buttons = [];
+    for (let ev of event_list) {
+        let button = [
+            {text: ev.name, callback_data: JSON.stringify({action: 'show', id: ev.id}) },
+            {text: '✏', callback_data: JSON.stringify({action: 'more', id: ev.id}) }
+        ];
+        buttons.push(button);
+    }
+
+    return JSON.stringify({
+            inline_keyboard: buttons,
+            parse_mode: 'Markdown'});
+}
+
 async function eventsForDate(user, from_id, search_date) {
     let event_list;
 
@@ -84,25 +99,8 @@ async function eventsForDate(user, from_id, search_date) {
     }
 
     if (event_list.length > 0) {
-        let buttons = [];
-        for (let ev of event_list) {
-            let info = {
-                action: 'show',
-                id: ev.id,
-            };
-            let info_data = JSON.stringify(info);
-            let button = [
-                {text: ev.name, callback_data: JSON.stringify({action: 'show', id: ev.id}) },
-                {text: '✏', callback_data: JSON.stringify({action: 'more', id: ev.id}) }
-            ];
-            buttons.push(button);
-        }
-
         let options = {
-            reply_markup: JSON.stringify({
-                inline_keyboard: buttons,
-                parse_mode: 'Markdown'
-            })
+            reply_markup: dayilyReplyMarkup(event_list)
         };
 
         bot.sendMessage(from_id, 'Here are your events for ' + search_date, options);
@@ -131,8 +129,14 @@ bot.on('callback_query', async function (msg) {
         let event = await events.getById(input.id);
 
         let buttons = [
-            [{text: 'edit event', callback_data: JSON.stringify({action: 'edit', id: event.id}) },
-            {text: 'delete event', callback_data: JSON.stringify({action: 'delete', id: event.id}) }]
+            [{text: 'edit event', callback_data: JSON.stringify({
+                    action: 'edit',
+                    id: event.id,
+                    orig: msg.message.message_id}) },
+            {text: 'delete event', callback_data: JSON.stringify({
+                    action: 'delete',
+                    id: event.id,
+                    orig: msg.message.message_id})}]
         ];
         let options = {
             parse_mode: 'Markdown',
@@ -143,6 +147,26 @@ bot.on('callback_query', async function (msg) {
         let resp = `What would you like to do with *${event.name}*?`;
         bot.sendMessage(msg.from.id, resp, options);
         bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'delete') {
+        let options = {
+            parse_mode : "Markdown"
+        };
+
+        try {
+            let event = await events.getById(input.id);
+            await events.remove(input.id);
+            bot.deleteMessage(msg.from.id, msg.message.message_id);
+            bot.deleteMessage(msg.from.id, input.orig);
+
+            bot.editMessageReplyMarkup();
+
+            bot.sendMessage(msg.from.id, `Event *${event.name}* was successfully deleted.`, options);
+            bot.answerCallbackQuery(msg.id);
+        } catch(e) {
+            console.log(e);
+            bot.sendMessage(msg.from.id, 'An error occurred.');
+            bot.answerCallbackQuery(msg.id);
+        }
     }
 });
 
