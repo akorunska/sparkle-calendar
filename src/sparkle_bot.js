@@ -12,13 +12,6 @@ let bot = new telegram_bot(token, {polling: true});
 bot.onText(/\/start/, function (msg) {
     let from_id = msg.from.id;
     let resp = "ok";
-    let instr =
-        "Hello, " + msg.from.username +", I`m Sparkle Bot.\n" +
-        "I can help you with notifications for your events on Sparkle Calendar\n" +
-        "/start — see this message again\n" +
-        "/today — see events for today\n" +
-        "\n" +
-        "If you`ve got any issues, questions or propositions, contact @augustusTertius";
 
     users.getUserByTelegramUsername(msg.from.username)
         .then(user => {
@@ -29,13 +22,13 @@ bot.onText(/\/start/, function (msg) {
                     .then(() => {
                         resp = "Great! Now you`re subscribed to my notifications.";
                         bot.sendMessage(from_id, resp);
-                        bot.sendMessage(from_id, instr);
+                        showHelp(msg.from);
                     })
                     .catch((err) => {
                         console.log(err);
                         resp = "Seems like you`ve already been registered.";
                         bot.sendMessage(from_id, resp);
-                        bot.sendMessage(from_id, instr);
+                        showHelp(msg.from);
                     });
             } else {
                 resp = "No user on Sparkle with such Telegram username.";
@@ -48,6 +41,24 @@ bot.onText(/\/start/, function (msg) {
         });
 });
 
+function showHelp(from) {
+    let instr =
+        "Hello, " + from.username +", I`m Sparkle Bot.\n" +
+        "I can help you with notifications for your events on Sparkle Calendar\n" +
+        "/start — register in Sparkle Bot\n" +
+        "/help — see this message again\n" +
+        "/today — see events for today\n" +
+        "/date YYYY-MM-DD — see events for certain date\n" +
+        "\n" +
+        "If you`ve got any issues, questions or propositions, contact @augustusTertius";
+
+    bot.sendMessage(from.id, instr);
+}
+
+bot.onText(/\/help/, function (msg) {
+    showHelp(msg.from);
+});
+
 bot.onText(/\/today/, async function (msg) {
     let resp = "";
     let from_id = msg.from.id;
@@ -55,7 +66,6 @@ bot.onText(/\/today/, async function (msg) {
 
     try {
         user = await telegram_users.getUserByTelegramUsername(msg.from.username);
-        console.log(user);
     } catch(e) {
         console.log(e);
         resp = "An error occurred, sorry.";
@@ -64,6 +74,30 @@ bot.onText(/\/today/, async function (msg) {
 
     if (user) {
         let date = moment();
+        let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
+        eventsForDate(user, from_id, search_date);
+    } else {
+        resp = "Seems you`re not subscribed in the bot. Try running /start.";
+        bot.sendMessage(from_id, resp);
+    }
+});
+
+bot.onText(/\/date (\d{4}-\d{2}-\d{2})/, async function (msg, match) {
+    let resp = "";
+    let from_id = msg.from.id;
+    let user;
+
+    try {
+        user = await telegram_users.getUserByTelegramUsername(msg.from.username);
+    } catch(e) {
+        console.log(e);
+        resp = "An error occurred, sorry.";
+        bot.sendMessage(from_id, resp);
+    }
+
+    if (user) {
+        let date = moment(match[1]);
+        console.log(date);
         let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
         eventsForDate(user, from_id, search_date);
     } else {
