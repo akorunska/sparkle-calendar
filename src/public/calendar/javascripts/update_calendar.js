@@ -51,7 +51,7 @@ function renderEvents() {
             let renderedHTML = Mustache.render(template, { list: events});
             document.getElementById("event_list_" + i).innerHTML = renderedHTML;
         } else {
-            document.getElementById("event_list_" + i).innerText = "You`ve got nothing planned for this date";
+            document.getElementById("event_list_" + i).innerText = "";
         }
     }
 }

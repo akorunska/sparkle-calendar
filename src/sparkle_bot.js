@@ -36,7 +36,7 @@ bot.onText(/\/start/, function (msg) {
             }
         })
         .catch(() => {
-            resp = "No user on Sparkle with such Telegram username.";
+            resp = "An error occurred.";
             bot.sendMessage(from_id, resp);
         });
 });
@@ -49,6 +49,7 @@ function showHelp(from) {
         "/help — see this message again\n" +
         "/today — see events for today\n" +
         "/date YYYY-MM-DD — see events for certain date\n" +
+        "/weekday 2 — see events for certain day of the week starting from today\n" +
         "\n" +
         "If you`ve got any issues, questions or propositions, contact @augustusTertius";
 
@@ -82,7 +83,7 @@ bot.onText(/\/today/, async function (msg) {
     }
 });
 
-bot.onText(/\/date (\d{4}-\d{2}-\d{2})/, async function (msg, match) {
+bot.onText(/\/date(.*)/, async function (msg, match) {
     let resp = "";
     let from_id = msg.from.id;
     let user;
@@ -96,17 +97,65 @@ bot.onText(/\/date (\d{4}-\d{2}-\d{2})/, async function (msg, match) {
     }
 
     if (user) {
-        let date = moment(match[1]);
-        console.log(date);
-        let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
-        eventsForDate(user, from_id, search_date);
+        if (!/\d{4}-\d{2}-\d{2}/.test(match[1].trim())) {
+            resp = "Please specify data in format YYYY-MM-DD";
+            bot.sendMessage(from_id, resp);
+        } else {
+            let date = moment(match[1].trim());
+            console.log(date);
+            if (!date.isValid()) {
+                resp = "Date is invalid\nPlease specify date in format YYYY-MM-DD";
+                bot.sendMessage(from_id, resp);
+            } else {
+                let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
+                eventsForDate(user, from_id, search_date);
+            }
+        }
     } else {
         resp = "Seems you`re not subscribed in the bot. Try running /start.";
         bot.sendMessage(from_id, resp);
     }
 });
 
-function dayilyReplyMarkup(event_list) {
+bot.onText(/\/weekday(.*)/, async function (msg, match) {
+    let resp = "";
+    let from_id = msg.from.id;
+    let user;
+
+    try {
+        user = await telegram_users.getUserByTelegramUsername(msg.from.username);
+    } catch(e) {
+        console.log(e);
+        resp = "An error occurred, sorry.";
+        bot.sendMessage(from_id, resp);
+    }
+
+    let day = parseInt(match[1]);
+    if (user) {
+        if (!/\d{1}/.test(match[1].trim()) && day >= 1 && day <= 7) {
+            resp = "Please specify one digit from 1 to 7, where 1 is closest Monday, 7 is closest Sunday.";
+            bot.sendMessage(from_id, resp);
+        } else {
+            let date = moment().weekday(day);
+            if (date.isBefore(moment())) {
+                date.add(7, 'd');
+            }
+            console.log(date);
+            if (!date.isValid()) {
+                resp = "Date is invalid\nPlease specify date in format YYYY-MM-DD";
+                bot.sendMessage(from_id, resp);
+            } else {
+                let search_date = (date.format()).substring(0, (date.format()).indexOf('T'));
+                eventsForDate(user, from_id, search_date);
+            }
+        }
+    } else {
+        resp = "Seems you`re not subscribed in the bot. Try running /start.";
+        bot.sendMessage(from_id, resp);
+    }
+});
+
+function dailyReplyMarkup(event_list) {
     let buttons = [];
     for (let ev of event_list) {
         let button = [
@@ -134,7 +183,7 @@ async function eventsForDate(user, from_id, search_date) {
 
     if (event_list.length > 0) {
         let options = {
-            reply_markup: dayilyReplyMarkup(event_list)
+            reply_markup: dailyReplyMarkup(event_list)
         };
 
         bot.sendMessage(from_id, 'Here are your events for ' + search_date, options);
