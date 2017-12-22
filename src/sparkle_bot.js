@@ -432,8 +432,21 @@ bot.onText(/(.*)/, async function (msg, match) {
                        bot.sendMessage(msg.from.id, 'Event end time was updated');
                        break;
                }
+
+               let options = {
+                   parse_mode : "Markdown"
+               };
+
+               let resp = `*${new_ev.name}*\n\n` +
+                   `**Time**:  ${new_ev.start_time} - ${new_ev.end_time}; ${moment(new_ev.date).format("dddd, MMMM Do YYYY")}\n` +
+                   `**Place**: ${new_ev.place}`;
+
+               bot.sendMessage(msg.from.id, resp, options);
            }
        }
+
+       bot.deleteMessage(msg.from.id, id);
+       bot.deleteMessage(msg.from.id, msg.message_id);
    }
 });
 
