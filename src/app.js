@@ -82,10 +82,10 @@ app.use('/', api_routes);
 app.use('/', profile_routes);
 app.use('/', event_routes);
 app.use('/', add_event_routes);
-// app.use('/', api);
-// app.use((req, res) => {
-//     res.render('404');
-// });
+
+app.use((req, res) => {
+    res.render('404');
+});
 
 let portNum = config.port;
 app.listen(portNum, () => console.log(`Server started on port ${portNum}.`));

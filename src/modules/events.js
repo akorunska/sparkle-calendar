@@ -178,7 +178,7 @@ function remove(x_id) {
             if (err)
                 reject(err);
             if (!event)
-                reject('no event wiht such id');
+                reject('no event with such id');
             event.remove();
             resolve("event deleted");
         });
