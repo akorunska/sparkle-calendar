@@ -108,7 +108,6 @@ bot.onText(/\/date(.*)/, async function (msg, match) {
             bot.sendMessage(from_id, resp);
         } else {
             let date = moment(match[1].trim());
-            console.log(date);
             if (!date.isValid()) {
                 resp = "Date is invalid\nPlease specify date in format YYYY-MM-DD";
                 bot.sendMessage(from_id, resp);
@@ -396,6 +395,7 @@ bot.onText(/(.*)/, async function (msg, match) {
        for (let i = 0; i < replies.length; i++) {
            if (replies[i].message === id) {
                let event = await events.getById(replies[i].event_id);
+               let success = false;
                let new_ev = {
                    id: event.id,
                    name: event.name,
@@ -410,38 +410,65 @@ bot.onText(/(.*)/, async function (msg, match) {
                        new_ev.name = match[1].trim();
                        await events.update(new_ev);
                        bot.sendMessage(msg.from.id, 'Event name was updated');
+                       success = true;
                        break;
                    case ('place') :
                        new_ev.place = match[1].trim();
                        await events.update(new_ev);
                        bot.sendMessage(msg.from.id, 'Event place was updated');
+                       success = true;
                        break;
                    case ('date') :
-                       new_ev.date = match[1].trim();
-                       await events.update(new_ev);
-                       bot.sendMessage(msg.from.id, 'Event date was updated');
+                       let date = moment(match[1].trim());
+                       if (!date.isValid()) {
+                           resp = "Date is invalid\nPlease specify date in format YYYY-MM-DD";
+                           bot.sendMessage(msg.from.id, resp);
+                       } else {
+                           new_ev.date = match[1].trim();
+                           await events.update(new_ev);
+                           bot.sendMessage(msg.from.id, 'Event date was updated');
+                           success = true;
+                       }
                        break;
                    case ('start_time') :
-                       new_ev.name = match[1].trim();
-                       await events.update(new_ev);
-                       bot.sendMessage(msg.from.id, 'Event start time was updated');
+                       let t  = moment(match[1].trim());
+
+                       if (!moment(event.date + "T" + t).isValid()) {
+                           let resp = "Date is invalid\nPlease specify date in format hh:mm";
+                           bot.sendMessage(msg.from.id, resp);
+                       } else {
+                           new_ev.start_time = match[1].trim();
+                           await events.update(new_ev);
+                           bot.sendMessage(msg.from.id, 'Event start time was updated');
+                           success = true;
+                       }
                        break;
                    case ('end_time') :
-                       new_ev.name = match[1].trim();
-                       await events.update(new_ev);
-                       bot.sendMessage(msg.from.id, 'Event end time was updated');
+                       let time  = moment(match[1].trim());
+
+                       if (!moment(event.date + "T" + time).isValid()) {
+                           let resp = "Date is invalid\nPlease specify date in format hh:mm";
+                           bot.sendMessage(msg.from.id, resp);
+                       } else {
+                           new_ev.end_time = match[1].trim();
+                           await events.update(new_ev);
+                           bot.sendMessage(msg.from.id, 'Event end time was updated');
+                           success = true;
+                       }
                        break;
                }
 
-               let options = {
-                   parse_mode : "Markdown"
-               };
+               if (success === true) {
+                   let options = {
+                       parse_mode : "Markdown"
+                   };
 
-               let resp = `*${new_ev.name}*\n\n` +
-                   `**Time**:  ${new_ev.start_time} - ${new_ev.end_time}; ${moment(new_ev.date).format("dddd, MMMM Do YYYY")}\n` +
-                   `**Place**: ${new_ev.place}`;
+                   let resp = `*${new_ev.name}*\n\n` +
+                       `**Time**:  ${new_ev.start_time} - ${new_ev.end_time}; ${moment(new_ev.date).format("dddd, MMMM Do YYYY")}\n` +
+                       `**Place**: ${new_ev.place}`;
 
-               bot.sendMessage(msg.from.id, resp, options);
+                   bot.sendMessage(msg.from.id, resp, options);
+               }
            }
        }
 
