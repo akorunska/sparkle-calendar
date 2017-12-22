@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const url = 'mongodb://admin:admin@ds159845.mlab.com:59845/sparkle';
 const moment = require('moment');
+
 mongoose.connect(url);
 
 let Schema = mongoose.Schema,
@@ -12,7 +13,9 @@ let eventSch = new Schema({
     date: String,
     start_time: String,
     end_time: String,
-    author_id: String
+    author_id: String,
+    notification: Boolean,
+    notification_time: String
 });
 
 eventSch.options.toJSON = {
@@ -34,7 +37,9 @@ function create(event) {
             date: event.date,
             start_time: event.start_time,
             end_time: event.end_time,
-            author_id: event.author_id
+            author_id: event.author_id,
+            notification: event.notification,
+            notification_time: event.notification_time
         });
         newEvent.save()
             .then(() => {
@@ -196,10 +201,21 @@ function update(event) {
     });
 }
 
+function getNotifications() {
+    return new Promise(((resolve, reject) => {
+        Event.find({notification: true}, function (err, docs) {
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(docs)));
+        });
+    }));
+}
+
 
 module.exports.create = create;
 module.exports.getAll = getAll;
 module.exports.getById = getById;
+module.exports.getNotifications = getNotifications;
 module.exports.searchByName = searchByName;
 module.exports.countByName = countByName;
 module.exports.searchByPlace = searchByPlace;

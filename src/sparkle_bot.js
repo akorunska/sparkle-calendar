@@ -9,6 +9,12 @@ let token = '471423777:AAFuKixbmlNxadC5qVnxh0TYXkDvuRnV6yU';
 
 let bot = new telegram_bot(token, {polling: true});
 
+let replies = [];
+
+function addReply(ev_id, m_id, field) {
+    replies.push({event_id: ev_id, message: m_id, field: field});
+}
+
 bot.onText(/\/start/, function (msg) {
     let from_id = msg.from.id;
     let resp = "ok";
@@ -213,20 +219,22 @@ bot.on('callback_query', async function (msg) {
 
         let buttons = [
             [{text: 'edit event', callback_data: JSON.stringify({
-                    action: 'edit',
-                    id: event.id,
-                    orig: msg.message.message_id}) },
+                    action: 'req_edit',
+                    id: event.id}) },
             {text: 'delete event', callback_data: JSON.stringify({
                     action: 'delete',
-                    id: event.id,
-                    orig: msg.message.message_id})}]
+                    id: event.id})}]
         ];
         let options = {
             parse_mode: 'Markdown',
             reply_markup: JSON.stringify({
                 inline_keyboard: buttons,
+                force_reply: true
             })
         };
+
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
         let resp = `What would you like to do with *${event.name}*?`;
         bot.sendMessage(msg.from.id, resp, options);
         bot.answerCallbackQuery(msg.id);
@@ -239,7 +247,7 @@ bot.on('callback_query', async function (msg) {
             let event = await events.getById(input.id);
             await events.remove(input.id);
             bot.deleteMessage(msg.from.id, msg.message.message_id);
-            bot.deleteMessage(msg.from.id, input.orig);
+            // bot.deleteMessage(msg.from.id, input.orig);
 
             bot.editMessageReplyMarkup();
 
@@ -250,6 +258,127 @@ bot.on('callback_query', async function (msg) {
             bot.sendMessage(msg.from.id, 'An error occurred.');
             bot.answerCallbackQuery(msg.id);
         }
+    } else if (input.action === 'req_edit') {
+        let event = await events.getById(input.id);
+
+        let buttons = [
+            [
+                {text: 'name', callback_data: JSON.stringify({
+                    action: 'edit_name',
+                    id: event.id})
+                },
+                {text: 'place', callback_data: JSON.stringify({
+                        action: 'edit_place',
+                        id: event.id})
+                },
+                {text: 'date', callback_data: JSON.stringify({
+                        action: 'edit_date',
+                        id: event.id})
+                }
+            ],
+            [
+                {text: 'start time', callback_data: JSON.stringify({
+                        action: 'edit_stime',
+                        id: event.id})
+                },
+                {text: 'end time', callback_data: JSON.stringify({
+                        action: 'edit_etime',
+                        id: event.id})
+                }
+            ]
+        ];
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                inline_keyboard: buttons
+            })
+        };
+
+        let resp = `Choose the field to edit in *${event.name}*?`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+        bot.sendMessage(msg.from.id, resp, options);
+        bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'edit_name') {
+        let event = await events.getById(input.id);
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                force_reply: true
+            })
+        };
+
+        let resp = `Enter new name for ${event.name}`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
+        let m = await bot.sendMessage(msg.from.id, resp, options);
+        addReply(event.id, m.message_id, 'name');
+        bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'edit_place') {
+        let event = await events.getById(input.id);
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                force_reply: true
+            })
+        };
+
+        let resp = `Enter new place for ${event.name}`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
+        let m = await bot.sendMessage(msg.from.id, resp, options);
+        addReply(event.id, m.message_id, 'place');
+        bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'edit_date') {
+        let event = await events.getById(input.id);
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                force_reply: true
+            })
+        };
+
+        let resp = `Enter new date for ${event.name}`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
+        let m = await bot.sendMessage(msg.from.id, resp, options);
+        addReply(event.id, m.message_id, 'date');
+        bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'edit_stime') {
+        let event = await events.getById(input.id);
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                force_reply: true
+            })
+        };
+
+        let resp = `Enter new name for ${event.name}`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
+        let m = await bot.sendMessage(msg.from.id, resp, options);
+        addReply(event.id, m.message_id, 'start_time');
+        bot.answerCallbackQuery(msg.id);
+    } else if (input.action === 'edit_etime') {
+        let event = await events.getById(input.id);
+
+        let options = {
+            parse_mode: 'Markdown',
+            reply_markup: JSON.stringify({
+                force_reply: true
+            })
+        };
+
+        let resp = `Enter new name for ${event.name}`;
+        bot.deleteMessage(msg.from.id, msg.message.message_id);
+
+        let m = await bot.sendMessage(msg.from.id, resp, options);
+        addReply(event.id, m.message_id, 'end_time');
+        bot.answerCallbackQuery(msg.id);
     }
 });
 
@@ -259,3 +388,52 @@ bot.onText(/\/echo (.+)/, function (msg, match) {
     console.log(match[1]);
     bot.sendMessage(from_id, resp);
 });
+
+bot.onText(/(.*)/, async function (msg, match) {
+    let id = msg.reply_to_message.message_id;
+
+    if (id) {
+       for (let i = 0; i < replies.length; i++) {
+           if (replies[i].message === id) {
+               let event = await events.getById(replies[i].event_id);
+               let new_ev = {
+                   id: event.id,
+                   name: event.name,
+                   place: event.place,
+                   date: event.date,
+                   start_time: event.start_time,
+                   end_time: event.end_time,
+                   author_id: event.author_id
+               };
+               switch (replies[i].field) {
+                   case ('name') :
+                       new_ev.name = match[1].trim();
+                       await events.update(new_ev);
+                       bot.sendMessage(msg.from.id, 'Event name was updated');
+                       break;
+                   case ('place') :
+                       new_ev.place = match[1].trim();
+                       await events.update(new_ev);
+                       bot.sendMessage(msg.from.id, 'Event place was updated');
+                       break;
+                   case ('date') :
+                       new_ev.date = match[1].trim();
+                       await events.update(new_ev);
+                       bot.sendMessage(msg.from.id, 'Event date was updated');
+                       break;
+                   case ('start_time') :
+                       new_ev.name = match[1].trim();
+                       await events.update(new_ev);
+                       bot.sendMessage(msg.from.id, 'Event start time was updated');
+                       break;
+                   case ('end_time') :
+                       new_ev.name = match[1].trim();
+                       await events.update(new_ev);
+                       bot.sendMessage(msg.from.id, 'Event end time was updated');
+                       break;
+               }
+           }
+       }
+   }
+});
+

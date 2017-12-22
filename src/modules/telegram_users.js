@@ -64,5 +64,16 @@ function getUserByTelegramUsername(username) {
     });
 }
 
+function getUserByUserId(user_id) {
+    return new Promise(function (resolve, reject) {
+        Telegram_user.findOne({user: user_id}, function (err, user){
+            if (err)
+                reject(err);
+            resolve(JSON.parse(JSON.stringify(user)));
+        } );
+    });
+}
+
 module.exports.create = create;
 module.exports.getUserByTelegramUsername = getUserByTelegramUsername;
+module.exports.getUserByUserId = getUserByUserId;
