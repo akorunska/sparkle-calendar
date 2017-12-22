@@ -65,6 +65,9 @@ function validate_telegram() {
             if (resObj.res === true) {
                 error.style.visibility = 'visible';
                 error.innerText = 'User with this telegram username is already registered.'
+            } else if (!/^@(.+)$/.test(value.trim())) {
+                error.style.visibility = 'visible';
+                error.innerText = 'Please, enter telegram username starting with @ (@username).'
             } else {
                 error.style.visibility = 'hidden';
             }

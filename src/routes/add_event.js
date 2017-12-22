@@ -19,9 +19,9 @@ router.post('/add_event',
             place: req.body.place,
             date: req.body.date,
             start_time: req.body.start_time,
-            end_time: req.body.end_time,
-            notification: req.body.notification,
-            notification_time: req.body.notification_time
+            end_time: req.body.end_time
+            //notification: req.body.notification,
+            //notification_time: req.body.notification_time
         };
         events.create(event)
             .catch(err => console.log('error while creating event:', err));
