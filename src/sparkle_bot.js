@@ -50,7 +50,7 @@ bot.onText(/\/start/, function (msg) {
 function showHelp(from) {
     let instr =
         "Hello, " + from.username +", I`m Sparkle Bot.\n" +
-        "I can help you with notifications for your events on Sparkle Calendar\n" +
+        "I can help you with your events on Sparkle Calendar\n" +
         "/start — register in Sparkle Bot\n" +
         "/help — see this message again\n" +
         "/today — see events for today\n" +
