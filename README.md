@@ -12,4 +12,4 @@ Admin is not very different from other users exept when searching everybody\`s e
 Mongo DB is being user for this project.
 
 **Important**  
-Don`t use telegram username to log in, as your device may suggest, use username instead. Otherwise you`ll be getting internal server error. 
+Don\`t use telegram username to log in, as your device may suggest, use username instead. Otherwise you\`ll be getting internal server error. 
